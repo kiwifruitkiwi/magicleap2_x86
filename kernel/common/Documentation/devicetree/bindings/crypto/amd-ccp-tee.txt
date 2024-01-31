@@ -1,0 +1,14 @@
+* AMD Cryptographic Coprocessor driver (ccp)
+
+Required properties:
+- compatible: Must be "amd,cvip-psp"
+- reg: Base address and length of the register set
+       and memory mapped region for the device
+
+Example:
+	sp_platform {
+		compatible = "amd,cvip-psp";
+		reg = <0x1 0x03810000 0 0x0C00>,
+		      <0x0 0xb000 0x0 0x1000>,
+		      <0x0 0x800000 0x0 0x1000>;
+	};

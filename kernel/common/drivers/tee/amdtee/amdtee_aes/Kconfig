@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+# AMDTEE CCP AES crypto provider
+config AMDTEE_CCP_AES
+	tristate "AMD-TEE-CCP-AES"
+	default y
+	depends on CRYPTO_DEV_SP_PSP || TEE || AMDTEE
+	help
+	  This implements AMD CCP AES driver.

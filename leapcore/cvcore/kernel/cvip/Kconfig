@@ -1,0 +1,93 @@
+config ML_CVIP_ARM
+	bool "ML CVIP ARM platform"
+	default n
+	help
+		ML CVIP ARM Platform
+
+config ML_CVIP_X86
+	bool "ML CVIP x86 platform"
+	default n
+	help
+		ML CVIP x86 Platform
+
+config ML_MERO_NOTIFIER
+    tristate "Magic Leap Interprocessor Notifier"
+    default y if ML_CVIP_X86 || ML_CVIP_ARM
+    help
+        Magic Leap inter-processor notification support in the kernel.  Mero notifier provides
+        an API for using the PL-320 to notify another processor and/or process about a given
+        named event.
+
+config ML_GSM
+	tristate "Magic Leap GSM IP Driver Support"
+	default y if ML_CVIP_X86 || ML_CVIP_ARM
+	help
+		Magic Leap GSM IP functionality support in the kernel.
+
+config ML_MLNET
+	tristate "Magic Leap Virtual Network Driver"
+	default y if ML_CVIP_X86 || ML_CVIP_ARM
+	help
+		MLNET is a virtual network driver used for communication between the CVIP and
+		the AP. It uses shregion shared memory and mero_notifier to for cross domain
+		communication.
+
+config ML_MERO_XPC
+	tristate "Magic Leap Cross Processor Communication"
+	default y if ML_CVIP_X86 || ML_CVIP_ARM
+	help
+		Magic Leap cross-processor notification support in the kernel.  Mero XPC provides
+		an API for using the PL-320 to notify another processor and/or process via a command,
+		notification, or dispatch_queue.
+
+config ML_SHREGION
+	tristate "Magic Leap Shared Region"
+	default y if ML_CVIP_X86 || ML_CVIP_ARM
+	help
+		Magic Leap shared regions support in the kernel.  Shared regions is
+		an API for allocating regions of shared memory implemented with the
+		Ion API.
+
+config ML_CVCORE_TRACE
+	tristate "Magic Leap cvcore trace"
+	default y if ML_CVIP_ARM
+	help
+		Magic Leap cvcore trace support in the kernel.
+
+config ML_MERO_SMMU
+	tristate "Magic Leap SMMU Driver"
+	default y if ML_CVIP_ARM
+	help
+		SMMU stream id binding/unbinding support in kernel.
+
+config CVIP_PLT
+	bool "CVIP platform driver"
+	default y if ML_CVIP_ARM
+	help
+		Enable this configuration option to support the cvip platform driver.
+		To compile this driver as a module, choose M here.
+
+config ML_DSP_CORE
+	tristate "Magic Leap DSP Core Driver Support"
+	default y if ML_CVIP_ARM
+	help
+		Magic Leap DSP Core support in the kernel.
+
+config ML_CDP
+	bool "CVIP Corner Detection Pipeline Engine"
+	default y if ML_CVIP_ARM
+	depends on ML_SHREGION
+	help
+		CVIP Corner Detection Pipeline Engine support in the kernel.
+
+config ML_DCPRS
+	bool "CVIP Decompression Engine"
+	default y if ML_CVIP_ARM
+	depends on ML_SHREGION
+	help
+		CVIP decompression Engine support in the kernel.
+
+config ML_INV_MPU
+	bool "Invensense components used by cvip"
+	default y if ML_CVIP_ARM
+	depends on ML_GSM

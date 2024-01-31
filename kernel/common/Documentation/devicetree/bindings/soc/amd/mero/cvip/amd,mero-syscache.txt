@@ -1,0 +1,86 @@
+* AMD CVIP system cache
+
+Required properties:
+- compatible: must be "amd,mero-syscache"
+- reg: Base address and size of the CVIP control/status registers
+       and PL310 controllers registers
+- interrupt-parent: Parent of PL310 controller interrupt
+- interrupts: Interrupts of DECERR, SLVERR, ERRRD, ERRRT, ERRWD,
+              ERRWT, PARRD, PARRT, ECNTR from PL310 controllers
+
+Optional properties:
+- arm,tag-latency: Cycles of latency for Tag RAM accesses. Specifies 3 cells of
+      read, write and setup latencies. Controllers without setup latency control
+      should use 0. Controllers without separate read and write Tag RAM latency
+      values should only use the first cell. Should contain 3 entries:
+  - setup tag latency
+  - read tag latency
+  - write tag latency
+
+- arm,data-latency: Cycles of latency for Data RAM accesses. Specifies 3 cells of
+      read, write and setup latencies. Minimum valid values are 1. Controllers
+      without setup latency control should use a value of 0. Should contain 3 entries:
+  - setup data latency
+  - read data latency
+  - write data latency
+
+- arm,filter-ranges: Starting address and length of window to filter.
+      Addresses in the filter window are directed to the M1 port. Other
+      addresses will go to the M0 port. Should contain 2 entries:
+  - filtering start address
+  - filtering range
+
+- arm,event-monitor: When present, enable event monitor bus
+- arm,ns-int-ctrl: When present, enable non-secure interrupt access control
+- arm,shared-override: When present, shared attribute internally ignored
+- arm,parity-enable: When present, enable parity checking
+- arm,parity-disable: When present, disable parity checking
+- arm,double-linefill: Must be 1 or 0, enable/disable double linefill
+- arm,double-linefill-incr: Must be 1 or 0, enable/disable incr double linefill
+- arm,double-linefill-wrap: Must be 1 or 0, enable/disable double linefill on WRAP read
+- arm,prefetch-drop: Must be 1 or 0, enable/disable prefetch drop
+- arm,prefetch-offset: Must be values of 0-7, 15, 23, and 31
+- prefetch-data: Must be 1 or 0, enable/disable data prefetching
+- prefetch-instr: Must be 1 or 0, enable/disable instruction prefetching
+- arm,dynamic-clock-gating: Must be 1 or 0, enable/disable dynamic clock gating
+- arm,standby-mode: Must be 1 or 0, enable/disable standby mode
+- cache-size: Should not be greater than 512K
+- cache-sets: Num of cache sets
+- cache-line-size: Size of cache line. If not present, it's equal to blocksize.
+- cache-block-size: Size of cache block.
+
+Example configuration:
+
+	SYSCACHE: syscache {
+		compatible = "amd,mero-syscache";
+		reg = <0x0 0x800000 0x0 0x1000>,
+		      <0x1f 0xffffc000 0x0 0x1000>,
+		      <0x1f 0xffffd000 0x0 0x1000>,
+		      <0x1f 0xffffe000 0x0 0x1000>,
+		      <0x1f 0xfffff000 0x0 0x1000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
+		arm,tag-latency = <3 3 3>;
+		arm,data-latency = <3 3 3>;
+		arm,filter-ranges = <0x80000000 0x8000000>;
+		arm,event-monitor;
+		arm,ns-int-ctrl;
+		arm,shared-override;
+		arm,parity-enable;
+		arm,double-linefill = <1>;
+		arm,double-linefill-incr = <1>;
+		arm,double-linefill-wrap = <1>;
+		arm,prefetch-drop = <1>;
+		arm,prefetch-offset = <1>;
+		prefetch-data = <1>;
+		prefetch-instr = <1>;
+		arm,dynamic-clock-gating = <1>;
+		arm,standby-mode = <1>;
+		cache-size = <0x40000>;
+		cache-sets = <512>;
+		cache-line-size = <32>;
+	};
+

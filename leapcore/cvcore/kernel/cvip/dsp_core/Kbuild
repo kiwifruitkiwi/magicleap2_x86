@@ -1,0 +1,16 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_DSP_CORE) += dsp_core.o
+
+dsp_core-y := dsp_core_kapi.o
+dsp_core-y += dsp_core_control_packets.o dsp_core_response_packets.o
+dsp_core-y += dsp_core_status_packets.o
+dsp_core-y += dsp_core_task_control_kapi.o
+dsp_core-y += dsp_core_task_manager_kapi.o
+
+ccflags-y := -Wall -Werror
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip
+ccflags-y += -I$(srctree)/include/uapi/linux/cvip

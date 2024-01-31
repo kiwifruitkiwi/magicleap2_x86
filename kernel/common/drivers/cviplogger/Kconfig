@@ -1,0 +1,10 @@
+#
+# Copyright (C) 2019 Advanced Micro Devices, Inc. All rights reserved.
+#
+
+config CVIP_LOGGER
+	bool "CVIP Event Logger"
+	help
+	  This driver provides support to log events of kernel drivers to allow
+	  post-mortom debugging. Events are stored in internal ring buffers for
+	  each new event log.

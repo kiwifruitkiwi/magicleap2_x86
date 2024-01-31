@@ -1,0 +1,129 @@
+/*
+ * Copyright (C) 2019-2021 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
+#ifndef _isp_mero_MASK_HEADER
+#define _isp_mero_MASK_HEADER
+
+ // ISP_MIPI_PHY0_REG0
+#define ISP_MIPI_PHY0_REG0__shutdownz_MASK                 0x00000001L
+#define ISP_MIPI_PHY0_REG0__rstz_MASK                      0x00000002L
+// ISP_MIPI_PHY0_REG1
+#define ISP_MIPI_PHY0_REG1__basedir_0_MASK                 0x00000001L
+// ISP_MIPI_PHY0_REG2
+#define ISP_MIPI_PHY0_REG2__hsfreqrange_MASK               0x0000007fL
+// ISP_MIPI_PHY0_REG3
+#define ISP_MIPI_PHY0_REG3__cfgclkfreqrange_MASK           0x000000ffL
+// ISP_MIPI_PHY0_REG4
+#define ISP_MIPI_PHY0_REG4__enableclk_MASK                 0x00000001L
+#define ISP_MIPI_PHY0_REG4__enable_0_MASK                  0x00000002L
+#define ISP_MIPI_PHY0_REG4__enable_1_MASK                  0x00000004L
+#define ISP_MIPI_PHY0_REG4__enable_2_MASK                  0x00000008L
+#define ISP_MIPI_PHY0_REG4__enable_3_MASK                  0x00000010L
+// ISP_MIPI_PHY0_REG5
+#define ISP_MIPI_PHY0_REG5__forcerxmode_0_MASK             0x00000001L
+#define ISP_MIPI_PHY0_REG5__forcerxmode_1_MASK             0x00000002L
+#define ISP_MIPI_PHY0_REG5__forcerxmode_2_MASK             0x00000004L
+#define ISP_MIPI_PHY0_REG5__forcerxmode_3_MASK             0x00000008L
+// ISP_MIPI_PHY0_REG6
+#define ISP_MIPI_PHY0_REG6__turndisable_0_MASK             0x00000001L
+// ISP_MIPI_PHY0_REG7
+#define ISP_MIPI_PHY0_REG7__testclr_MASK                   0x00000001L
+// ISP_MIPI_PHY0_TESTINTERF_CMD
+#define ISP_MIPI_PHY0_TESTINTERF_CMD__CMD_WDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY0_TESTINTERF_CMD__CMD_ADDR_MASK        0x000fff00L
+#define ISP_MIPI_PHY0_TESTINTERF_CMD__CMD_WRITE_MASK       0x01000000L
+// ISP_MIPI_PHY0_TESTINTERF_ACK
+#define ISP_MIPI_PHY0_TESTINTERF_ACK__CMD_RDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY0_TESTINTERF_ACK__CMD_ACK_MASK         0x00010000L
+// ISP_MIPI_PHY1_REG0
+#define ISP_MIPI_PHY1_REG0__shutdownz_MASK                 0x00000001L
+#define ISP_MIPI_PHY1_REG0__rstz_MASK                      0x00000002L
+// ISP_MIPI_PHY1_REG1
+#define ISP_MIPI_PHY1_REG1__basedir_0_MASK                 0x00000001L
+// ISP_MIPI_PHY1_REG2
+#define ISP_MIPI_PHY1_REG2__hsfreqrange_MASK               0x0000007fL
+// ISP_MIPI_PHY1_REG3
+#define ISP_MIPI_PHY1_REG3__cfgclkfreqrange_MASK           0x000000ffL
+// ISP_MIPI_PHY1_REG4
+#define ISP_MIPI_PHY1_REG4__enableclk_MASK                 0x00000001L
+#define ISP_MIPI_PHY1_REG4__enable_0_MASK                  0x00000002L
+#define ISP_MIPI_PHY1_REG4__enable_1_MASK                  0x00000004L
+#define ISP_MIPI_PHY1_REG4__enable_2_MASK                  0x00000008L
+#define ISP_MIPI_PHY1_REG4__enable_3_MASK                  0x00000010L
+// ISP_MIPI_PHY1_REG5
+#define ISP_MIPI_PHY1_REG5__forcerxmode_0_MASK             0x00000001L
+#define ISP_MIPI_PHY1_REG5__forcerxmode_1_MASK             0x00000002L
+#define ISP_MIPI_PHY1_REG5__forcerxmode_2_MASK             0x00000004L
+#define ISP_MIPI_PHY1_REG5__forcerxmode_3_MASK             0x00000008L
+// ISP_MIPI_PHY1_REG6
+#define ISP_MIPI_PHY1_REG6__turndisable_0_MASK             0x00000001L
+// ISP_MIPI_PHY1_REG7
+#define ISP_MIPI_PHY1_REG7__testclr_MASK                   0x00000001L
+// ISP_MIPI_PHY1_TESTINTERF_CMD
+#define ISP_MIPI_PHY1_TESTINTERF_CMD__CMD_WDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY1_TESTINTERF_CMD__CMD_ADDR_MASK        0x000fff00L
+#define ISP_MIPI_PHY1_TESTINTERF_CMD__CMD_WRITE_MASK       0x01000000L
+// ISP_MIPI_PHY1_TESTINTERF_ACK
+#define ISP_MIPI_PHY1_TESTINTERF_ACK__CMD_RDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY1_TESTINTERF_ACK__CMD_ACK_MASK         0x00010000L
+// ISP_MIPI_PHY2_REG0
+#define ISP_MIPI_PHY2_REG0__shutdownz_MASK                 0x00000001L
+#define ISP_MIPI_PHY2_REG0__rstz_MASK                      0x00000002L
+// ISP_MIPI_PHY2_REG1
+#define ISP_MIPI_PHY2_REG1__basedir_0_MASK                 0x00000001L
+// ISP_MIPI_PHY2_REG2
+#define ISP_MIPI_PHY2_REG2__hsfreqrange_MASK               0x0000007fL
+// ISP_MIPI_PHY2_REG3
+#define ISP_MIPI_PHY2_REG3__cfgclkfreqrange_MASK           0x000000ffL
+// ISP_MIPI_PHY2_REG4
+#define ISP_MIPI_PHY2_REG4__enableclk_MASK                 0x00000001L
+#define ISP_MIPI_PHY2_REG4__enable_0_MASK                  0x00000002L
+#define ISP_MIPI_PHY2_REG4__enable_1_MASK                  0x00000004L
+#define ISP_MIPI_PHY2_REG4__enable_2_MASK                  0x00000008L
+#define ISP_MIPI_PHY2_REG4__enable_3_MASK                  0x00000010L
+// ISP_MIPI_PHY2_REG5
+#define ISP_MIPI_PHY2_REG5__forcerxmode_0_MASK             0x00000001L
+#define ISP_MIPI_PHY2_REG5__forcerxmode_1_MASK             0x00000002L
+#define ISP_MIPI_PHY2_REG5__forcerxmode_2_MASK             0x00000004L
+#define ISP_MIPI_PHY2_REG5__forcerxmode_3_MASK             0x00000008L
+// ISP_MIPI_PHY2_REG6
+#define ISP_MIPI_PHY2_REG6__turndisable_0_MASK             0x00000001L
+// ISP_MIPI_PHY2_REG7
+#define ISP_MIPI_PHY2_REG7__testclr_MASK                   0x00000001L
+// ISP_MIPI_PHY2_TESTINTERF_CMD
+#define ISP_MIPI_PHY2_TESTINTERF_CMD__CMD_WDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY2_TESTINTERF_CMD__CMD_ADDR_MASK        0x000fff00L
+#define ISP_MIPI_PHY2_TESTINTERF_CMD__CMD_WRITE_MASK       0x01000000L
+// ISP_MIPI_PHY2_TESTINTERF_ACK
+#define ISP_MIPI_PHY2_TESTINTERF_ACK__CMD_RDATA_MASK       0x000000ffL
+#define ISP_MIPI_PHY2_TESTINTERF_ACK__CMD_ACK_MASK         0x00010000L
+
+#define ISP_STATUS__CCPU_RD_AXI_BUS_CLEAN_MASK             0x00004000L
+#define ISP_STATUS__CCPU_WR_AXI_BUS_CLEAN_MASK             0x00008000L
+#define ISP_STATUS__IDMA_RD_AXI_BUS_CLEAN_MASK             0x00010000L
+#define ISP_STATUS__IDMA_WR_AXI_BUS_CLEAN_MASK             0x00020000L
+
+#define ISP_STATUS__CCPU_REPORT_MASK                       0x000000feL
+#define ISP_CCPU_CNTL__CCPU_HOST_SOFT_RST_MASK             0x00040000L
+#define ISP_SOFT_RESET__CCPU_SOFT_RESET_MASK               0x00000001L
+#define ISP_CCPU_CNTL__CCPU_STALL_MASK                     0x00080000L
+
+// ISP_SOFT_RESET
+#define ISP_SOFT_RESET__CCPU_SOFT_RESET_MASK               0x00000001L
+#define ISP_SOFT_RESET__IH_SOFT_RESET_MASK                 0x00000002L
+#define ISP_SOFT_RESET__SEM_SOFT_RESET_MASK                0x00000004L
+#define ISP_SOFT_RESET__TIMER0_SOFT_RESET_MASK             0x00000008L
+#define ISP_SOFT_RESET__TIMER1_SOFT_RESET_MASK             0x00000010L
+#define ISP_SOFT_RESET__IMC_CC_SOFT_RESET_MASK             0x00000020L
+#define ISP_SOFT_RESET__IMC_INBUF_SOFT_RESET_MASK          0x00000040L
+#define ISP_SOFT_RESET__IMC_OUTBUF_SOFT_RESET_MASK         0x00000080L
+#define ISP_SOFT_RESET__IMC_MAILBOX_SOFT_RESET_MASK        0x00000100L
+
+
+// ISP_MIPI_CSI0_STATUS
+#define ISP_MIPI_CSI0_STATUS__MIPI_S_STOPSTATE_CLK_MASK    0x00001000L
+
+// ISP_MIPI_CSI1_STATUS
+#define ISP_MIPI_CSI1_STATUS__MIPI_S_STOPSTATE_CLK_MASK    0x00001000L
+#endif

@@ -1,0 +1,12 @@
+obj-m += hydra.o
+
+hydra-y += hydra_drv.o hsi.o nwl.o vcam.o wearable.o
+
+# for cvip
+ccflags-y += -I${src}
+ccflags-y += -I$(CVCORE_TOP)/kernel/cvip/dcprs
+ccflags-y += -I$(CVCORE_TOP)/kernel/include/linux/cvip
+ccflags-y += -I$(CVCORE_TOP)/kernel/include/linux/cvip/hydra
+ccflags-y += -I$(srctree)/drivers/staging/android
+
+KBUILD_EXTRA_SYMBOLS  = ${AMD_OUT_KERNEL}/Module.symvers

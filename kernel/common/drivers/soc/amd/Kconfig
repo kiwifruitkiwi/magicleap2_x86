@@ -1,0 +1,9 @@
+#/*
+# * Copyright (C) 2019 Advanced Micro Devices, Inc. All rights reserved.
+# */
+
+menu "AMD SoC"
+
+source "drivers/soc/amd/mero/Kconfig"
+
+endmenu

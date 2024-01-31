@@ -1,0 +1,85 @@
+/*
+ * DTS file for AMD Mero SoC CVIP Subsystem
+ *
+ * Copyright (C) 2020 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+
+/dts-v1/;
+
+#include "amd-mero-cvip-mauna-common.dtsi"
+
+/ {
+	cpus {
+		#size-cells = <0x0>;
+		#address-cells = <0x1>;
+
+		cpu@000 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0000>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		cpu@100 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0100>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		cpu@200 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0200>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		cpu@300 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0300>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		cpu@400 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0400>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		cpu@500 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			reg = <0x0500>;
+			enable-method = "psci";
+			clocks = <&scpi_dvfs 1>;
+			cpu-idle-states = <&CPU_SLEEP_0>;
+		};
+
+		idle-states {
+			entry-method = "psci";
+
+			CPU_SLEEP_0: cpu-sleep-0 {
+				compatible = "arm,idle-state";
+				arm,psci-suspend-param = <0x0>;
+				entry-latency-us = <30>;
+				exit-latency-us = <60>;
+				min-residency-us = <1000>;
+			};
+		};
+	};
+};

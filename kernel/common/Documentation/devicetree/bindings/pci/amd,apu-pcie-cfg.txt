@@ -1,0 +1,33 @@
+Amd request translator by IOMMU for CVIP to access x86 managed PCIE device:
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,apu-pcie-cfg".
+- reg: Aperture address space start and size.
+- interrupts: The interrupt signal from the function block.
+
+Optional Properties:
+- iommus: Should point to the corresponding IOMMU block.
+- device_type: Should be "pci".
+- map_base: Base address of mapped physical memory, defaults to 0x0
+- map_size: Length of mapped physical memory, defaults to 0x0
+- nbio_user_bits_addr: nbio user bits register address
+- nbio_user_bits_szie: nbio user bits register size
+- nbio_user_bits_default_value: default value of nbio user bits register
+
+Example:
+    pcie@2000000000 {
+        compatible = "amd,apu-pcie-cfg";
+        reg = <0x20 0x00000000 0x8 0x00000000>;
+        interrupt-parent = <&gic>;
+        interrupts =
+                 //TBU_apu1.ras or TBU_apu1.pmu
+                 <GIC_SPI 146 IRQ_TYPE_EDGE_RISING>;
+        iommus = <&smmu 1>;
+        device_type = "pci";
+        map_base = <0xa0000000 0x00000000>;
+        map_size = <0x0 0x4000>;
+        nbio_user_bits_addr = <0x0 0x80087c>;
+        nbio_user_bits_size = <0x4>;
+        nbio_user_bits_default_value = <0x5>;
+  };

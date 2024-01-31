@@ -1,0 +1,14 @@
+Magic Leap Power Monitor driver
+
+The power monitor driver registers INA devices from the EC
+as hwmon devices and receives updates for current, voltage,
+and power for the channels.
+
+Required properties:
+- compatible: "ml,ml_pwr_mon"
+
+Example:
+pwr_mon {
+	compatible = "ml,ml_pwr_mon";
+	mlmux = <&mux>;
+};

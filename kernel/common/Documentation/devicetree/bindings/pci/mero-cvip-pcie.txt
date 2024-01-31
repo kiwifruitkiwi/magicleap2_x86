@@ -1,0 +1,56 @@
+* AMD CVIP PCIe interface
+
+Required properties:
+- compatible:
+	"pci-host-ecam-amd" for root port;
+- reg: Should contain the configuration address space.
+- reg-names: Should contain the name of the configuration address space
+- #address-cells: Address representation for root ports (must be 3)
+- #size-cells: Size representation for root ports (must be 2)
+- linux,pci-probe-only: 0: linux allocate pci device resource during enum
+                        1: FW allocate pci device resource during enum
+- linux,pci-domain:
+   If present this property assigns a fixed PCI domain number to a host bridge,
+   otherwise an unstable (across boots) unique number will be assigned.
+   It is required to either not set this property at all or set it for all
+   host bridges in the system, otherwise potentially conflicting domain numbers
+   may be assigned to root buses behind different host bridges.  The domain
+   number for each host bridge in the system must be unique.
+- device_type: set to "pci"
+- ranges: ranges for the PCI memory and I/O regions
+- bus-range: PCI bus numbers covered (only 0x80-0xff can be
+		used in CVIP)
+- apu_pcie_m: subnode for setting up smmu table for M interface.
+              amd,cvip-biommu.txt can tell more about "amd,cvip-biommu".
+
+Example configuration:
+
+	pcie0: pcie@0x2000000000
+		{
+			compatible = "pci-host-ecam-amd";
+			linux,pci-probe-only = <1>;
+			linux,pci-domain = <0x0>;
+			#address-cells = <3>;
+			#size-cells = <2>;
+			device_type = "pci";
+			bus-range = <0x80 0xff>;
+			reg = <0x22 0x00000000 0 0x20000000>,
+			      <0x26 0x20008000 0 0x00008000>,
+			      <0x26 0x30000000 0 0x30000000>,
+			      <0x0  0x00800000 0 0x00001000>,
+			      <0x1  0x1013a320 0 0x00000010>;
+			reg-names = "cfg", "io", "mmio", "cvip", "flushctrl";
+
+			ranges =
+				/* 64-bit MMIO (size= 30G) */
+				<0x03080000 0x20 0x80000000 0X20 0x80000000
+				 0x7 0x80000000>;
+			apu_pcie_m {
+				compatible = "amd,cvip-biommu";
+				iommus = <&smmu 0x60000>;
+				output_addr = <0x0 0xd9060000>;
+				map_size = <0x0 0x00010000>;
+				input_addr = <0x0 0x00100000>;
+				map_prot = <0x0 0x00000003>;
+			};
+		};

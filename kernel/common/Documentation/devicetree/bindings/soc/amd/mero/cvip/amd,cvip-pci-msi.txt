@@ -1,0 +1,13 @@
+Amd MSI controller node for CVIP:
+
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,cvip-pci-msi".
+- msi-controller : this device is a msi controller.
+
+Example:
+	msi-cvip {
+		compatible = "amd,cvip-pci-msi";
+		msi-controller;
+	};

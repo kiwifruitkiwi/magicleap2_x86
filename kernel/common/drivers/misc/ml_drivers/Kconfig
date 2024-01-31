@@ -1,0 +1,38 @@
+#
+# Magic Leap Miscellaneous Drivers
+#
+menu "Magic Leap Miscellaneous Drivers"
+
+config MLMUX_FCMD
+	bool "MLMUX for FCMD"
+	depends on ML_MUX
+	help
+	  This character device uses mlmux to communicate to STM.
+	  The FCMD server routes the command to the character device
+	  using an ioctrl call. The server will block, waiting for
+	  the response.
+
+config ML_VICON_RAVEN
+	tristate "Motion capture for Vicon on Raven"
+	depends on X86 && ML_HYDRA
+	help
+	  This driver triggers an interrupt on every rising/falling
+	  edge and records the current timestamp in a queue
+
+config ML_VICON_MERO
+	tristate "Motion capture for Vicon on Mero"
+	help
+	  This driver triggers an interrupt on every rising/falling
+	  edge and records the current timestamp in a queue. This
+	  driver is used in conjunction with the Vicon and Optitrack
+	  motion capture systems. The motion capture systems output
+	  a UART data stream via single GPIO, and this driver
+	  timestamps edge changes on the data stream.
+
+config ML_AUDIO_LATENCY_MERO
+	bool "Audio latency test for MERO"
+	help
+	  This driver exposes a gpio that'll be use for audio
+	  latency tests.
+
+endmenu

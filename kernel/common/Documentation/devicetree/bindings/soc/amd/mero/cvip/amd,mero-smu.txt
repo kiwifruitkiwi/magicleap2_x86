@@ -1,0 +1,13 @@
+Amd SMU node for MERO:
+
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,mero-smu".
+- reg	     : Base address and size of the SMU registers
+
+Example:
+	apu_smu {
+		compatible = "amd,mero-smu";
+		reg = <0x1 0x03b10000 0 0x1000>;
+	};

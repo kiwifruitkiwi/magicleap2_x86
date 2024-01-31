@@ -1,0 +1,91 @@
+menuconfig PL320_IPC
+	bool "IPC support with PL320"
+	help
+	  Mailbox framework using ARM PL320 modules.
+	  Same IPC library will be used for both x86 and CVIP.
+	  Say Y if platform using PL320 mailbox.
+	  If in doubt, say N.
+
+if PL320_IPC
+
+config CVIP_IPC
+	bool "cvip ipc support"
+	default n
+	help
+	  This option defines whether CVIP IPC is supported.
+	  only one of CVIP_IPC or X86_IPC can be set.
+	  Say Y here if you want build cvip ipc.
+	  If in doubt, say N.
+
+config X86_IPC
+	bool "x86 iPC support"
+	default n
+	help
+	  This option defines whether x86 IPC is supported
+	  only one of CVIP_IPC or X86_IPC can be set.
+	  Say Y here if you want build x86 ipc.
+	  If in doubt, say N.
+
+config ISP_IPC
+	bool "ISP ipc support"
+	default y
+	help
+	  This option defines whether ISP IPC is supported
+	  depend on the system configuration
+	  Say Y here if you want build ISP ipc.
+	  If in doubt, say N.
+
+config DSP_IPC
+	bool "DSP ipc support"
+	default n
+	help
+	  This option defines whether DSP IPC is supported
+	  depend on the system configuration
+	  Say Y here if you want build DSP ipc.
+	  If in doubt, say N.
+
+config IPC_RINGBUFFER
+	bool "IPC ringbuffer support"
+	default n
+	help
+	  This option defines whether ringbuffer implementation is supported
+	  It is reserved for future implementation.
+	  Say Y here if ringbuffer is supported in IPC implementation.
+	  If in doubt, say N.
+
+config IPC_UNIT_TESTS
+	bool "IPC unit test support"
+	default n
+	help
+	  This option defines whether IPC unit test is enabled.
+	  IPC UNIT test can be triggerd through sys node when enabled.
+	  Say Y here if ipc unit test is enabled.
+	  If in doubt, say N.
+
+config IPC_VIRTIO
+	bool "IPC virtio support"
+	default n
+	help
+	  This option defines whether virtIO is supported.
+	  It is reserved for future implementation.
+	  Say Y here if virtIO is supported in IPC implementation.
+	  If in doubt, say N.
+
+config IPC_XPORT
+	bool "IPC xport support"
+	default n
+	help
+	  This option defines whether xport heap setup and removal is supported.
+	  Say Y here if xport heap request is supported in IPC implementation.
+	  If in doubt, say N.
+
+config ISP_SENSOR_SIM
+	bool "ISP simulate sensor"
+	default n
+	help
+	  Enable this option to simulate sensor behaviours in driver.
+	  It internally will start a timer to achieve this.
+	  Say Y here if sensor simulation is needed.
+	  If in doubt, say N.
+
+endif

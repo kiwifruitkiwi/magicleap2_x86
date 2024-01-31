@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config HSP_DIAG
+	tristate "HSP diag support"
+	depends on MHI_BUS && EVENT_TRACING
+	help
+	  Select this to use HSP diag infrastructure.

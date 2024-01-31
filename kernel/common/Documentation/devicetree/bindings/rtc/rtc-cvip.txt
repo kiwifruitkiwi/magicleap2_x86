@@ -1,0 +1,13 @@
+CVIP Real Time Clock
+====================
+
+Required Properties:
+ - compatible: Should be "amd,cvip-rtc"
+ - reg: Specifies physical base address and size
+
+Example:
+
+rtc@‭102d01700‬ {
+	compatible = "amd,cvip-rtc";
+	reg = <0x1 0x02d01700‬ 0x0 0x1000>
+};

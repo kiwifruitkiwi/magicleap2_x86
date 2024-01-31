@@ -1,0 +1,17 @@
+Amd ISP IPC node for CVIP:
+
+defines mailboxes used for Amd ISP IPC
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,isp-ipc".
+- mbox-names : Name of the mailbox.
+- mboxes     : Standard property to specify a Mailbox
+               (See ./mailbox.txt).
+
+Example:
+    isp-ipc {
+        compatible = "amd,isp-ipc";
+        mboxes = <&ipc4 0>, <&ipc4 1>;
+        mbox-names = "cam0_cntl", "cam1_cntl";
+    };

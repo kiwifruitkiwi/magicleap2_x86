@@ -1,0 +1,20 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_MERO_NOTIFIER) += mero_notifier.o
+mero_notifier-y += mero_notifier_core.o
+
+# TODO(someone): replace custom defs in code with CONFIG_ML_CVIP_X86, etc.
+ifneq ($(CONFIG_ML_CVIP_X86),)
+  ccflags-y += -DX86_MERO
+  ccflags-y += -I$(srctree)/$(src)/../mero_xpc/include
+else
+  ccflags-y += -I$(srctree)/drivers/staging/android
+  ccflags-y += -DARM_CVIP
+endif
+
+ccflags-y += -Wall -Werror
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip
+ccflags-y += -I$(srctree)/include/uapi

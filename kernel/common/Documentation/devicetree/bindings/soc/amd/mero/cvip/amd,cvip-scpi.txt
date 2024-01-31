@@ -1,0 +1,32 @@
+Amd SCPI node for CVIP:
+
+defines scpi firmware protocol used for Amd scpi
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,cvip-scpi".
+- reg        : Base address and size of the SMU registers
+- clocks     : standard arm scpi clock property
+               (See ./arm,scpi.txt).
+
+Example:
+	scpi_protocol: scpi@03b10000 {
+		compatible = "amd,cvip-scpi";
+		reg = <0x0 0x03b10000 0 0x1000>;
+		clocks {
+			compatible = "arm,scpi-clocks";
+			scpi_dvfs: scpi_clocks@0 {
+				compatible = "arm,scpi-dvfs-clocks";
+				#clock-cells = <1>;
+				clock-indices = <0>, <1>;
+				clock-output-names = "a55clk", "a55twoclk";
+				operating-points-v2 = <&cpu_opp_table>;
+			};
+			scpi_clk: scpi_clocks@2 {
+				compatible = "arm,scpi-variable-clocks";
+				#clock-cells = <1>;
+				clock-indices = <2>, <3>, <4>;
+				clock-output-names = "c5clk", "q6clk", "nicClk";
+			};
+		};
+	};

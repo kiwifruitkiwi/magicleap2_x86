@@ -1,0 +1,19 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_SHREGION) += shregion.o
+
+shregion-y += shregion_common.o
+
+# TODO(someone): replace custom defs in code with CONFIG_ML_CVIP_X86, etc.
+ifneq ($(CONFIG_ML_CVIP_X86),)
+  ccflags-y += -I$(srctree)/$(src)/../mero_xpc/include
+  shregion-y += shregion_mero_x86_core.o
+else
+  ccflags-y += -DARM_CVIP -I$(srctree)/drivers/staging/android
+  shregion-y += shregion_core.o
+endif
+
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip

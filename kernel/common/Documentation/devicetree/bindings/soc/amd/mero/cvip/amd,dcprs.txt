@@ -1,0 +1,17 @@
+decompression engine for CVIP:
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,dcprs".
+- iommus: Should point to the corresponding IOMMU block.
+- reg: address and size of dcprs node
+
+Optional Properties:
+- interrupts: The interrupt signal from TBU.
+
+Example:
+  dcprs@d3800000 {
+        compatible = "amd,dcprs";
+        reg = <0x0 0xd3800000 0x0 0x800000>;
+        iommus = <&smmu 0x40000>;
+  };

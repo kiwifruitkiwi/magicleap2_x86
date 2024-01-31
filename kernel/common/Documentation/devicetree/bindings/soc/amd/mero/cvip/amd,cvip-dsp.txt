@@ -1,0 +1,54 @@
+Amd dsp driver for CVIP:
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,cvip-dsp".
+- #size-cells : should be 2 indicate "reg" property need 2 cells to describe aperture size.
+- #address-cells : should be 2 indicate "reg" property need 2 cells to describe aperure base address.
+- interrupts: TBU interrupts from IOMMU.
+- range :must be empty.
+
+Optional Properties:
+- bypass_pd_control : boolean to indicate the DSP PD power up/down control should be bypassed.
+
+Example:
+	q6_0: dsp@c4000000 {
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+		compatible = "amd,cvip-dsp";
+		interrupt-parent = <&gic>;
+		interrupts =
+			//TBU_Q6_p0_0.ras or TBU_Q6_p0_0.pmu
+			<GIC_SPI 118 IRQ_TYPE_EDGE_RISING>,
+			//TBU_Q6_p0_1.ras or TBU_Q6_p0_1.pmu
+			<GIC_SPI 119 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "pn_0", "pn_1";
+
+		icache@1 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x1>;
+			output_addr = <0x0 0xc4000000>;
+			map_size = <0x0 0x000c0000>;
+			input_addr = <0x0 0xc4000000>;
+			map_prot = <0x0 0x00000001>;
+		};
+
+		dcache@2 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x2>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00800000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		idma@3 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x3>;
+			output_addr = <0x10 0x00000000>;
+			map_size = <0x0 0x00080000>;
+			input_addr = <0x0 0xfff80000>;
+			map_prot = <0x0 0x00000003>;
+		};
+	};

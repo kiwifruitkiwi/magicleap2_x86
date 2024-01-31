@@ -1,0 +1,9 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_CVCORE_TRACE) += cvcore_trace_kapi.o
+
+ccflags-y := -Wall -Werror
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip

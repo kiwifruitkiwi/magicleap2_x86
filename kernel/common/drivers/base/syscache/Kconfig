@@ -1,0 +1,40 @@
+config OUTER_CACHE
+	bool "outer cache support"
+	help
+	  This option enables outer_cache.
+	  The outer cache has functions that can be used to clean and
+	  invalidate outer cache lines, which need address of the callback
+	  object.
+
+config OUTER_CACHE_SYNC
+	bool "outer cache sync support"
+	help
+	  The outer cache has a outer_cache_fns.sync function pointer
+	  that can be used to drain the write buffer of the outer cache.
+	  This option enables support for outer cache sync, which needs
+	  address of the callback object.
+
+config CACHE_L2X0
+	bool "Enable the L2x0 outer cache controller"
+	select OUTER_CACHE
+	select OUTER_CACHE_SYNC
+	help
+	  This option enables the L2x0 PrimeCell.
+	  This option should be selected by machines which have a L2x0
+	  or PL310 cache controller, but where its use that enables the L2x0
+	  outer cache controller is optional.
+
+config CACHE_L2X0_PMU
+	bool "L2x0 performance monitor support" if CACHE_L2X0
+	select PERF_EVENTS
+	help
+	  This option enables support for the performance monitoring features
+	  of the L220 and PL310 outer cache controllers.
+
+config CVIP_SYS_CACHE
+	bool "Enable the system cache controller for CVIP"
+	help
+	  This option enables the system cache controller for CVIP.
+	  This option should be selected by machines which have a system
+	  cache controller and controlling interfaces in the trustzone.
+

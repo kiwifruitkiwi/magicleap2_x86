@@ -1,0 +1,50 @@
+AMD ION for Mero CVIP
+
+ION is a memory manager that allows for sharing of buffers between different
+processes and between user space and kernel space. ION manages different
+memory spaces by separating the memory spaces into "heaps".
+
+Required properties:
+- compatible: "amd,mero-ion"
+
+Required properties for ION heaps
+- reg: the ID of the ION heap.
+- memory-region: physical memory region for the heap, can reference to
+	memory region nodes defined in reserved-memory section.
+- mero,ion-heap-type: the heap type to use for this heap, should be one of
+  the following:
+	- "SYSTEM"
+	- "SYSTEM_CONTIG"
+	- "CARVEOUT"
+	- "CHUNK"
+	- "DMA"
+
+- mero,ion-heap-init-type: option for clearing the memory region to zero when
+	heap is created, default is to clear memory to zero, should be one of
+	the following:
+	- "memory-clear"
+	- "memory-no-clear"
+
+Example:
+	mero,ion {
+		compatible = "amd,mero-ion";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		mero,ion-heap@10 {
+			reg = <10>;
+			memory-region = <&sram_q6_s0>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		sram_q6_s0: q6_s0@c4000000 {
+			reg = <0x0 0xc4000000 0x0 0x000c0000>;
+		};
+	}

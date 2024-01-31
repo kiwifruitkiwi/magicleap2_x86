@@ -1,0 +1,88 @@
+# SPDX-License-Identifier: MIT
+config DRM_AMDGPU_SI
+	bool "Enable amdgpu support for SI parts"
+	depends on DRM_AMDGPU
+	help
+	  Choose this option if you want to enable experimental support
+	  for SI asics.
+
+	  SI is already supported in radeon. Experimental support for SI
+	  in amdgpu will be disabled by default and is still provided by
+	  radeon. Use module options to override this:
+
+	  radeon.si_support=0 amdgpu.si_support=1
+
+config DRM_AMDGPU_CIK
+	bool "Enable amdgpu support for CIK parts"
+	depends on DRM_AMDGPU
+	help
+	  Choose this option if you want to enable support for CIK asics.
+
+	  CIK is already supported in radeon. If you enable this option,
+	  support for CIK will be provided by amdgpu and disabled in
+	  radeon by default. Use module options to override this:
+
+	  radeon.cik_support=1 amdgpu.cik_support=0
+
+config DRM_AMDGPU_USERPTR
+	bool "Always enable userptr write support"
+	depends on DRM_AMDGPU
+	depends on MMU
+	select MMU_NOTIFIER
+	help
+	  This option selects CONFIG_MMU_NOTIFIER if it isn't already
+	  selected to enabled full userptr support.
+
+config DRM_AMDGPU_GART_DEBUGFS
+	bool "Allow GART access through debugfs"
+	depends on DRM_AMDGPU
+	depends on DEBUG_FS
+	default n
+	help
+	  Selecting this option creates a debugfs file to inspect the mapped
+	  pages. Uses more memory for housekeeping, enable only for debugging.
+
+config DRM_AMDGPU_DUMP
+	bool "Enable AMDGPU GPU dump upon GPU hang"
+	depends on DRM_AMDGPU
+	depends on DRM_DUMP
+	default y
+	help
+	  Selecting this option enables support for persisting AMDGPU's
+	  different blocks register status upon GPU hang.
+
+config DRM_AMDGPU_GMC_DUMP
+	bool "Persist GMC block's status"
+	depends on DRM_AMDGPU_DUMP
+	default y
+	help
+	  Selecting this option enables support for persisting
+	  AMDGPU's GMC block register status upon GPU hang.
+
+config DRM_AMDGPU_GFX_DUMP
+	bool "Persist GFX block's status"
+	depends on DRM_AMDGPU_DUMP
+	default y
+	help
+	  Selecting this option enables support for persisting
+	  AMDGPU's GFX block register status upon GPU hang.
+
+config DRM_AMDGPU_COMPUTE_DUMP
+	bool "Persist COMPUTE block's status"
+	depends on DRM_AMDGPU_DUMP
+	default y
+	help
+	  Selecting this option enables support for persisting
+	  AMDGPU's COMPUTE block register status upon GPU hang.
+
+config DRM_AMDGPU_SDMA_DUMP
+	bool "Persist SDMA block's status"
+	depends on DRM_AMDGPU_DUMP
+	default y
+	help
+	  Selecting this option enables support for persisting
+	  AMDGPU's SDMA block register status upon GPU hang.
+
+source "drivers/gpu/drm/amd/acp/Kconfig"
+source "drivers/gpu/drm/amd/display/Kconfig"
+source "drivers/gpu/drm/amd/amdkfd/Kconfig"

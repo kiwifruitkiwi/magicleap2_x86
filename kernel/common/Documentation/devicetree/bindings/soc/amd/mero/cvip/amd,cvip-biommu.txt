@@ -1,0 +1,28 @@
+Amd Bus IOMMU for CVIP:
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,cvip-biommu".
+- iommus: Should point to the corresponding IOMMU block.
+- output_addr: Base address of mapped physical memory
+- map_size: Length of mapped physical memory
+- input_addr: Offset of mapped physical memory
+- map_prot: Protect permission of mapped physical memory
+            0x1 - Read permission
+            0x2 - Write permission
+
+Optional Properties:
+- interrupts: The interrupt signal from TBU.
+- no-suspend-unmap: bypass iommu unmap during pm suspend
+
+Example:
+    smn@2000000000 {
+        compatible = "amd,cvip-biommu";
+        interrupt-parent = <&gic>;
+        interrupts = <GIC_SPI 146 IRQ_TYPE_EDGE_RISING>;
+        iommus = <&smmu 1>;
+        output_addr = <0xa0000000 0x00000000>;
+        map_size = <0x0 0x4000>;
+        input_addr = <0x0 0x00000000>;
+        map_prot = <0x0 0x00000003>;
+  };

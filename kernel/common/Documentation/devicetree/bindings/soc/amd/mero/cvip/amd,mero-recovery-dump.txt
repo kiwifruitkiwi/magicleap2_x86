@@ -1,0 +1,15 @@
+Amd Mero-recovery-dump device node:
+
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,mero-recovery-dump".
+- reg : location of saving the reserved memory base address and size.
+- region-size : region size that need to alloc
+
+Example:
+	recovery_dump {
+		compatible = "amd,mero-recovery-dump";
+		reg = <0x0 0xaff0 0x0 0x10>;
+		region-size = <0x200000>;
+	};

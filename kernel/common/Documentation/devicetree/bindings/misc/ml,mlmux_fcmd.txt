@@ -1,0 +1,13 @@
+ML Mux FCMD character device driver
+
+The mlmux_fcmd is a character device driver that sends
+factory test commands to STM over mlmux channel.
+
+Required properties:
+- compatible: "ml,mlmux_fcmd"
+
+Example:
+mlmux_fcmd_comm {
+	compatible = "ml,mlmux_fcmd";
+	mlmux = <&mux>;
+};

@@ -1,0 +1,12 @@
+ML Mux Test Client driver
+
+The test client of ML Mux IPC
+
+Required properties:
+- compatible: "ml,test_mlmux"
+
+Example:
+mlmux_test {
+	compatible = "ml,test_mlmux";
+	mlmux = <&mux>;
+};

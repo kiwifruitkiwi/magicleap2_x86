@@ -1,0 +1,13 @@
+#
+# Kconfig for stand-alone compass input device drivers
+#
+
+config ML_AK9912
+	tristate "AKM 9912 devices"
+	depends on SPI && SYSFS && INPUT
+	default n
+	help
+      This driver supports the AKM 9912 devices.
+      Driver uses SPI interface and reports data via
+      input subsystem.
+      Driver supports all four data rates (10, 20, 50, 100Hz)

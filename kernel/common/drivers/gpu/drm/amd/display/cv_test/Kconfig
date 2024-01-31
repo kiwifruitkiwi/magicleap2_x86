@@ -1,0 +1,8 @@
+config DRM_AMDGPU_CV_STUB
+	tristate "Enable CV stub driver"
+	depends on DRM && DRM_AMDGPU
+	default y
+	help
+	  Choose this option if you want to enable the CV stub
+	  interface driver. This is only used to test the interface
+	  to the CV driver provided by the amdgpu display driver.

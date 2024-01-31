@@ -1,0 +1,37 @@
+
+#ifndef _SANDBOX_FILTER
+#define _SANDBOX_FILTER(name, str)
+#endif
+
+/*
+  the orders of the filters must conform to the order of the bit fields in struct sandbox_profile!!
+  That order is required in order to support runtime parsing of profiles files
+  (see sbox_create_profile_from_file)
+*/
+_SANDBOX_FILTER(NO_NEW_PRIVS,		"no_new_privs")
+_SANDBOX_FILTER(JAIL,			"jail")
+_SANDBOX_FILTER(ENABLE_JIT,		"enable-jit")
+_SANDBOX_FILTER(SYSCALLS_PERMISSIVE,	"syscalls-permissive")
+_SANDBOX_FILTER(ALLOW_LOCAL_CONNECTIONS,		"allow_local_connections")
+_SANDBOX_FILTER(ALLOW_LOCAL_CONN_SAMEPROC,			"allow_local_conn_sameproc")
+_SANDBOX_FILTER(SYSCALLS,		"syscalls")
+
+
+_SANDBOX_FILTER(ALLOW_LOCAL_TRANSMIT_GROUP_A,		"allow_local_transmit_group_A")
+_SANDBOX_FILTER(ALLOW_LOCAL_TRANSMIT_GROUP_B,		"allow_local_transmit_group_B")
+_SANDBOX_FILTER(ALLOW_LOCAL_TRANSMIT_GROUP_C,		"allow_local_transmit_group_C")
+_SANDBOX_FILTER(ALLOW_LOCAL_TRANSMIT_GROUP_D,		"allow_local_transmit_group_D")
+_SANDBOX_FILTER(ALLOW_LOCAL_TRANSMIT_GROUP_E,		"allow_local_transmit_group_E")
+
+_SANDBOX_FILTER(ALLOW_LOCAL_RECEIVE_GROUP_A,		"allow_local_receive_group_A")
+_SANDBOX_FILTER(ALLOW_LOCAL_RECEIVE_GROUP_B,		"allow_local_receive_group_B")
+_SANDBOX_FILTER(ALLOW_LOCAL_RECEIVE_GROUP_C,		"allow_local_receive_group_C")
+_SANDBOX_FILTER(ALLOW_LOCAL_RECEIVE_GROUP_D,		"allow_local_receive_group_D")
+_SANDBOX_FILTER(ALLOW_LOCAL_RECEIVE_GROUP_E,		"allow_local_receive_group_E")
+
+_SANDBOX_FILTER_ALIAS(JAIL, "jail_apps")
+_SANDBOX_FILTER_ALIAS(JAIL, "jail_browser")
+_SANDBOX_FILTER_ALIAS(JAIL, "jail_mxs")
+
+
+#undef _SANDBOX_FILTER

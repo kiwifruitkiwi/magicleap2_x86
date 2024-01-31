@@ -1,0 +1,13 @@
+Amd MSI device node for CVIP:
+
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,msi-cvip".
+- msi-parent : specify parent of msi.
+
+Example:
+	msi-cvip {
+		compatible = "amd,msi-cvip";
+		msi-parent = <&its>;
+	};

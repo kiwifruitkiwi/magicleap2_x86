@@ -1,0 +1,17 @@
+Amd IPC Core for CVIP:
+
+defines mailboxs used for Amd IPC
+------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,ipc-core".
+- mbox-name  : Name of the mailbox.
+- mboxes     : Standard property to specify a Mailbox
+               (See ./mailbox.txt).
+
+Example:
+    mero-ipc {
+        compatible = "amd,ipc-core";
+        mboxes = <&ipc1 0>, <&ipc1 9>, <&ipc1 10>, <&ipc0 1>, <&ipc4 0>;
+        mbox-names = "sync", "asynctx", "asyncrx", "smurx", "isprx";
+    };

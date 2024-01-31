@@ -1,0 +1,9 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_DCPRS) += dcprs.o
+dcprs-y                += dcprs_config.o dcprs_lib.o dcprs_drv.o
+
+ccflags-y += -I$(src)
+ccflags-y += -I$(srctree)/drivers/staging/android

@@ -1,0 +1,11 @@
+
+obj-m += hcsm.o
+hcsm-y += main.o stats.o attributes.o
+
+# for cvip
+KBUILD_EXTRA_SYMBOLS = ${CVCORE_OUT}/hydra/arm/kernel/Module.symvers
+KBUILD_EXTRA_SYMBOLS += ${AMD_OUT_KERNEL}/Module.symvers
+
+ccflags-y += -I$(CVCORE_TOP)/kernel/cvip/hydra
+ccflags-y += -I$(CVCORE_TOP)/kernel/include/linux/cvip
+ccflags-y += -I$(CVCORE_TOP)/kernel/include/linux/cvip/hydra

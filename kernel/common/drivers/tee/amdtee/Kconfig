@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+# AMD-TEE Trusted Execution Environment Configuration
+config AMDTEE
+	tristate "AMD-TEE"
+	default y
+	depends on CRYPTO_DEV_CCP_DD && CRYPTO_DEV_SP_PSP
+	help
+	  This implements AMD's Trusted Execution Environment (TEE) driver.
+
+if AMDTEE
+
+menu "AMDTEE client driver"
+
+source "drivers/tee/amdtee/amdtee_aes/Kconfig"
+
+endmenu
+
+endif
+

@@ -1,0 +1,13 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_GSM) += gsm.o
+
+gsm-y := gsm_core.o gsm_spinlock.o gsm_jrtc.o
+
+obj-$(CONFIG_GSM_KUNIT_TEST) += gsm_test.o
+
+ccflags-y := -Wall -Werror
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip

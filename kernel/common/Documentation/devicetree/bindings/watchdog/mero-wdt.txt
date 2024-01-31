@@ -1,0 +1,33 @@
+Mero Watchdog Timer
+
+Required Properties:
+- compatible : Should contain "amd,mero-wdt".
+- reg : Base address and size of the watchdog timer registers.
+
+Optional Properties:
+- interrupts : The interrupt used for the watchdog timeout warning.
+- frequency : The frequency used for watchdog counter value.
+              Default value is 204800.
+- timeout : The timeout in seconds used for watchdog counter value.
+            Default value is 20.
+- withboot : The flag used to start watchdog timer with kernel.
+             Default value is 0.
+- nowayout : The flag used to config if watchdog can be disabled.
+             Default value is 1.
+- debug : The debug mode used to print useful values of registers.
+- mode : The mode used for watchdog to send reset(0) or interrupt(1)
+         signal. Default value is 1.
+
+Example:
+	wdt0: watchdog@d2000000 {
+		compatible = "amd,mero-wdt";
+		reg = <0x0 0x0d2000000 0 0x100>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 111 IRQ_TYPE_EDGE_RISING>;
+		frequency = <128000>;
+		withboot = <1>;
+		nowayout = <0>;
+		timeout = <20>;
+		debug = <1>;
+		mode = <1>;
+	};

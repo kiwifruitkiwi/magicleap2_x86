@@ -1,0 +1,18 @@
+* AMD HDTOUT UART
+
+The AMD's HDTOUT UART is used for interfacing SoC with serial
+communication devices in an emulation environment. No flow control
+and clock control in this emulation UART.
+
+Required properties:
+- compatible: should be "amd,hdtout-1.0"
+
+- reg: base physical address of the controller and length of memory mapped
+  region.
+
+Example:
+	hdtout_uart0: serial@800000 {
+		status = "ok";
+		compatible = "amd,hdtout-1.0";
+		reg = <0x0 0x800000 0x0 0x1000>;
+	};

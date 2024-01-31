@@ -1,0 +1,7 @@
+obj-$(CONFIG_ML_MLNET) += mlnet.o
+
+ccflags-y := -Wall -Werror
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip
+ccflags-y += -I$(srctree)/drivers/staging/android
+

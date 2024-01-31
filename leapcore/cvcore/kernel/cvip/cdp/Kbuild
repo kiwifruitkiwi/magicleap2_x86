@@ -1,0 +1,11 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_CDP) += cdp.o
+cdp-y                := cdp_config.o cdp_lib.o cdp_debugfs.o cdp_drv.o
+
+ccflags-y := -I$(srctree)/$(src)
+ccflags-y += -I$(srctree)/include/linux/cvip
+ccflags-y += -I$(srctree)/drivers/staging/android
+

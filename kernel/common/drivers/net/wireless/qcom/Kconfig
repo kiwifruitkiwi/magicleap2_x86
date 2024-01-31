@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: GPL-2.0-only
+config WLAN_VENDOR_QUALCOMM
+	bool "Qualcomm devices"
+	default y
+	---help---
+	  If you have a wireless card belonging to this class, say Y.
+
+	  Note that the answer to this question doesn't directly affect the
+	  kernel: saying N will just cause the configurator to skip all the
+	  questions about these cards. If you say Y, you will be asked for
+	  your specific card in the following questions.
+
+if WLAN_VENDOR_QUALCOMM
+
+config CLD_LL_CORE
+	tristate "QTI core WLAN driver for QCA chipset"
+	select NL80211_TESTMODE
+	select WEXT_CORE
+	select WEXT_PRIV
+	select WEXT_SPY
+	select WIRELESS_EXT
+	help
+	  This section contains the necessary modules needed to enable the
+	  core WLAN driver for QTI QCA chipset.
+	  Select Y to compile the driver in order to have WLAN functionality
+	  support.
+
+source "drivers/net/wireless/qcom/cnss2/Kconfig"
+source "drivers/net/wireless/qcom/wlan-host/qcacld-3.0/Kconfig"
+
+endif # WLAN_VENDOR_QUALCOMM

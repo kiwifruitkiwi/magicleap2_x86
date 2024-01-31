@@ -1,0 +1,58 @@
+--------------------------------------------------------------------
+Amd Mailbox for CVIP:
+Copyright (C) 2021 Advanced Micro Devices, Inc. All rights reserved.
+--------------------------------------------------------------------
+
+Mero Mailbox Driver
+===================
+
+Required Properties:
+- compatible:	Should contain "amd,mero-ipc"
+- reg:		Base address and size of the mailbox registers.
+- #mbox-cells:	Shall be 1 - the index of the channel needed.
+		<&phandle channel>
+		 phandle : Label name of controller
+		 channel : Channel number
+- mbox-num:	Number of mailboxs
+- interrupts:	Interrupt number. The interrupt specifier format
+		depends on the interrupt controller parent.
+- parameters:	The parameters of all mailboxs.
+		<mbid srcid destid mode ...[mbid srcid destid mode]>
+		 mbid: mailbox id
+		 srcid: source core index
+		 destid: destination core index
+		 mode: mode setting format
+		 +----------+---------+---------+----------+
+		 |    31:30 |   29:25 |      24 |    23:19 |
+		 +----------+---------+---------+----------+
+		 | Reserved | Number  | Soft    | Reserved |
+		 |          | of      | Mailbox |          |
+		 |          | Mailbox | Link    |          |
+		 +----------+---------+---------+----------+
+
+		 +-------+------+-------+----------+------+------+
+		 |    18 | 17   | 16    | 15:2     | 1    | 0    |
+		 +-------+------+-------+----------+------+------+
+		 | Write | Read | Slave | Reserved | Auto | Auto |
+		 | Only  | Only | Mode  |          | Link | ACK  |
+		 |       |      |       |          |      |      |
+		 +-------+------+-------+----------+------+------+
+
+Optional Properties:
+- affinity:	cpu affinity for each interrupt.
+- interrupt-names:	interrupt name when request_irq().
+
+Example:
+	ipc0: mailbox@da000000 {
+		compatible = "amd,mero-ipc";
+		reg = <0x0 0xda000000 0x0 0x800000>;
+		#mbox-cells = <1>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+		...
+		interrupt-names = "isp_cam_ctrl", "isp_stats";
+		affinity = <0 1 2 3>;
+		parameters = <0 1 0 1>
+		...
+	};

@@ -1,0 +1,59 @@
+#
+# Thermal zone driver for AMD Mero Subsystem
+#
+# Copyright (C) 2020 Advanced Micro Devices, Inc. All rights reserved.
+#
+config MERO_X86_THERMAL
+	tristate "Mero x86 component thermal initialization"
+	depends on X86 && DRM_AMDGPU
+	default m
+	help
+	  Enable the mero thermal zone x86 cpu component driver.
+	  The user interface is exposed by generic thermal
+	  framework.
+
+	  Say 'Y' if need to enable the mero x86 thermal zone.
+
+config MERO_SOC_THERMAL
+	tristate "Mero SOC component thermal initialization"
+	depends on X86 && DRM_AMDGPU
+	default m
+	help
+	  Enable the mero thermal zone SOC component driver.
+	  The user interface is exposed by generic thermal
+	  framework.
+
+	  Say 'Y' if need to enable the mero x86 thermal zone.
+
+config MERO_CVIP_THERMAL
+	tristate "Mero CVIP component thermal initialization"
+	depends on X86 && DRM_AMDGPU
+	default m
+	help
+	  Enable the mero thermal zone CVIP component driver.
+	  The user interface is exposed by generic thermal
+	  framework.
+
+	  Say 'Y' if need to enable the mero x86 thermal zone.
+
+config MERO_GFX_THERMAL
+	tristate "Mero GFX component thermal initialization"
+	depends on X86 && DRM_AMDGPU
+	default m
+	help
+	  Enable the mero thermal zone GFX component driver.
+	  The user interface is exposed by generic thermal
+	  framework.
+
+	  Say 'Y' if need to enable the mero x86 thermal zone.
+
+config MERO_THERMAL
+	tristate "Mero thermal zone interface support"
+	depends on X86 && DRM_AMDGPU
+	default m
+	help
+	  Enable the mero thermal interface for common mero device
+	  usage. The thermal trip and value can be override through
+	  tz_cfg.
+
+	  Say 'Y' if need to enable mero thermal zone infrastructure.

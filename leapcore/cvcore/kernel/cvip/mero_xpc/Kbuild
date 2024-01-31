@@ -1,0 +1,17 @@
+#
+# SPDX-License-Identifier: GPL-2.0-only
+#
+
+obj-$(CONFIG_ML_MERO_XPC) += mero_xpc.o
+
+mero_xpc-y := pl320_hal.o pl320_gsm_extensions.o mero_xpc_configuration.o mero_xpc_command.o
+mero_xpc-y += mero_xpc_common.o mero_xpc_kapi.o mero_xpc_notification.o mero_xpc_queue.o
+mero_xpc-y += mero_xpc_test.o xctrl.o xdebug.o xstat.o
+
+# Common flags
+ccflags-y += -Wall -Werror
+ccflags-y += -D__STDC_FORMAT_MACROS
+
+ccflags-y += -I$(srctree)/$(src)/../include
+ccflags-y += -I$(srctree)/include/linux/cvip
+ccflags-y += -I$(srctree)/drivers

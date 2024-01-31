@@ -1,0 +1,16 @@
+ML Mux LED driver
+
+The led_mlmux is a LED driver that sends LED settings
+to LED component on EC over mlmux channel. The settings
+are programmed into the hardware by the LED driver on
+the EC.  When the settings are read from sysfs, the
+values are retrieved from LED component on EC.
+
+Required properties:
+- compatible: "ml,leds_mlmux"
+
+Example:
+mlmux-leds {
+	compatible = "ml,leds_mlmux";
+	mlmux = <&mux>;
+};

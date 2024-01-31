@@ -1,0 +1,30 @@
+#
+# Magic Leap drivers configuration
+#
+
+config INPUT_ML_TOTEM
+	tristate "Magic Leap control support"
+	depends on INPUT
+	help
+	  Say Y to enable Magic Leap Totem/Control (MLT) bus driver.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called mlt.
+
+config INPUT_ML_TOTEM_GRIP
+	tristate "Magic Leap Grip control support"
+	depends on INPUT_ML_TOTEM && INPUT
+	help
+	  Say Y to enable Magic Leap Grip control driver.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called grip.
+
+config INPUT_ML_TOTEM_ROSHI
+	tristate "Magic Leap Roshi control support"
+	depends on INPUT_ML_TOTEM && INPUT
+	help
+	  Say Y to enable Magic Leap Roshi control driver.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called roshi.

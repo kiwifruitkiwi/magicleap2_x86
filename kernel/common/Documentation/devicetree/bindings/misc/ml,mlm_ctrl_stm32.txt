@@ -1,0 +1,12 @@
+ML Mux SPI controller driver
+
+The controller side of ML Mux IPC over SPI PHY
+
+Required properties:
+- compatible: must be the following
+  - "ml,mlm_ctrl_stm32"
+
+Example:
+mux: stm32l462_i2c@66 {
+	compatible = "ml,mlm_ctrl_stm32";
+};

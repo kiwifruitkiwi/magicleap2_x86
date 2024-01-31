@@ -1,0 +1,12 @@
+--------------------------------------------------------------------
+Amd xport device for CVIP:
+Copyright (C) 2021 Advanced Micro Devices, Inc. All rights reserved.
+--------------------------------------------------------------------
+
+Required Properties:
+- compatible : should contain "amd,cvip-xport".
+
+Example:
+    xport@0 {
+        compatible = "amd,cvip-xport";
+    };

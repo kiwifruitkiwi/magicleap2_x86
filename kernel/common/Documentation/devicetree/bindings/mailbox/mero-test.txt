@@ -1,0 +1,12 @@
+Mero Mailbox Test Driver
+========================
+
+Required Properties:
+- compatible:	Should contain "amd,mero-mbox-test"
+- con_phandle:	phandle list of mailbox controller nodes for test.
+
+Example:
+	mero_mbox_test {
+		compatible = "amd,mero-mbox-test";
+		con_phandle = <&ipc0 &ipc1 &ipc2 &ipc3 &ipc4>;
+	};

@@ -1,0 +1,20 @@
+MERO CVIP pin controller
+
+Required properties:
+- compatible	: "mero,cvip-pinctrl"
+- reg		: Address range of the pinctrl registers
+
+For example, pinctrl might have properties like the following:
+	cvip_pinctrl {
+		compatible = "amd,cvip-pinctrl";
+		reg =	<0x1 0x02d01d00 0x0 0x90>, /* IOMUX Registers */
+			<0x1 0x02d02980 0x0 0x1f>; /* CVIP IOMUX Registers */
+
+		uart_default: uart_default {
+			mux {
+				pins = "gpio141", "gpio143", "gpio144";
+				function = "uart";
+			};
+		};
+		...
+	};

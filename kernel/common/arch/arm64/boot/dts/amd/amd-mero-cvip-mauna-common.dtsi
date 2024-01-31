@@ -1,0 +1,1785 @@
+/*
+ * DTS file for AMD Mero SoC CVIP common subsystem
+ *
+ * Copyright (C) 2018-2021 Advanced Micro Devices, Inc. All rights reserved.
+ */
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+
+/dts-v1/;
+
+/ {
+	interrupt-parent = <&gic>;
+	#size-cells = <0x2>;
+	#address-cells = <0x2>;
+
+	psci {
+		status = "ok";
+		migrate = <0xc4000005>;
+		cpu_on = <0xc4000003>;
+		cpu_off = <0x84000002>;
+		cpu_suspend = <0xc4000001>;
+		system_suspend = <0xc400000E>;
+		method = "smc";
+		compatible = "arm,psci-1.0", "arm,psci";
+	};
+
+	gic: interrupt-controller@d9000000 {
+		status = "ok";
+		compatible = "arm,gic-v3";
+		interrupt-controller;
+		interrupt-parent = <&gic>;
+		#interrupt-cells = <3>;
+		#address-cells = <2>;
+		#size-cells = <2>;
+		reg = <0x0 0xd9000000 0 0x10000>,	// GICD
+			  <0x0 0xd9060000 0 0x200000>;	// GICR
+		interrupts = <1 9 4>;
+
+		cmc: cvip-msi-controller {
+			status = "ok";
+			compatible = "amd,cvip-pci-msi";
+			msi-controller;
+		};
+	};
+
+	syscache@1fffffc000 {
+		status = "ok";
+		compatible = "amd,mero-syscache";
+		reg = <0x1f 0xffffc000 0x0 0x1000>,
+			  <0x1f 0xffffd000 0x0 0x1000>,
+			  <0x1f 0xffffe000 0x0 0x1000>,
+			  <0x1f 0xfffff000 0x0 0x1000>,
+			  <0x0 0x800000 0x0 0x1000>;
+		reg-names = "cache0", "cache1", "cache2", "cache3", "cvip";
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 114 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
+		cache-size = <0x80000>;
+		cache-sets = <2048>;
+		cache-line-size = <32>;
+		arm,event-monitor;
+		arm,ns-int-ctrl;
+		arm,dynamic-clock-gating = <1>;
+		arm,standby-mode = <1>;
+	};
+
+	//MERO_CVIP_PINCTRL
+	cvip_pinctrl: pin-controller@102d02900 {
+		compatible = "amd,cvip-pinctrl";
+		reg =	<0x1 0x02d01d00 0x0 0x90>, /* IOMUX Registers */
+			<0x1 0x02d029c0 0x0 0x20>, /* CVIP IOMUX Registers */
+			<0x1 0x02d02900 0x0 0xc0>; /* CVIP GPIO Registers */
+
+		gpio-controller;
+		#gpio-cells = <2>;
+
+		uart0_default: uart0_default {
+			mux {
+				pins = "gpio141", "gpio143", "gpio144";
+				function = "uart0";
+			};
+		};
+
+		uart1_default: uart1_default {
+			mux {
+				pins = "gpio350", "gpio351";
+				function = "uart1";
+			};
+		};
+
+		i2c0_default: i2c0_default {
+			mux {
+				pins = "gpio340", "gpio341";
+				function = "i2c0";
+			};
+		};
+
+		i2c1_default: i2c1_default {
+			mux {
+				pins = "gpio342", "gpio343";
+				function = "i2c1";
+			};
+		};
+
+		spi_default: spi_default {
+			mux {
+				pins = "gpio345", "gpio346", "gpio347",
+				       "gpio348", "gpio349";
+				function = "spi";
+			};
+		};
+
+		gpio_default: gpio_default {
+			mux {
+				pins = "gpio320", "gpio321", "gpio322",
+				       "gpio323", "gpio324", "gpio325",
+				       "gpio326", "gpio327", "gpio328";
+				function = "gpio";
+			};
+		};
+	};
+
+	uart0: serial@102dd9000 {
+		status = "ok";
+		compatible = "snps,dw-apb-uart";
+		reg = <0x1 0x02dd9000 0x0 0x100>;
+		clock-frequency = <48000000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+		//interrupt-parent = <&gic>;
+		//interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+		reg-shift = <2>;
+		reg-io-width = <4>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart0_default>;
+	};
+
+	uart1: serial@102dda000 {
+		status = "ok";
+		compatible = "snps,dw-apb-uart";
+		reg = <0x1 0x02dda000 0x0 0x100>;
+		clock-frequency = <48000000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+		//interrupt-parent = <&gic>;
+		//interrupts = <GIC_SPI 186 IRQ_TYPE_LEVEL_HIGH>;
+		reg-shift = <2>;
+		reg-io-width = <4>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&uart1_default>;
+	};
+
+	i2c_clk: i2c_clk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000>;
+	};
+
+	i2c0: i2c@102dc2000 {
+		status = "disable";
+		compatible = "snps,designware-i2c";
+		reg = <0x1 0x02dc2000 0x0 0x1000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&i2c_clk>;
+		clock-names = "i2c_clk";
+		i2c-sda-hold-time-ns = <300>;
+		i2c-sda-falling-time-ns = <300>;
+		i2c-scl-falling-time-ns = <300>;
+	};
+
+	i2c1: i2c@102dc3000 {
+		status = "disable";
+		compatible = "snps,designware-i2c";
+		reg = <0x1 0x02dc3000 0x0 0x1000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 188 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&i2c_clk>;
+		clock-names = "i2c_clk";
+		i2c-sda-hold-time-ns = <300>;
+		i2c-sda-falling-time-ns = <300>;
+		i2c-scl-falling-time-ns = <300>;
+	};
+
+	wdt0: watchdog@d2000000 {
+		status = "ok";
+		compatible = "amd,mero-wdt";
+		reg = <0x0 0x0d2000000 0 0x100>;
+		clocks = <&scpi_clk 4>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 111 IRQ_TYPE_EDGE_RISING>;
+		frequency = <100000000>; /* 100 Mhz */
+		timeout = <20>;
+		mode = <0>; /* 0:rst, 1:int */
+		withboot = <1>;
+	};
+
+	wdt1: watchdog@d2800000 {
+		status = "ok";
+		compatible = "amd,mero-wdt";
+		reg = <0x0 0x0d2800000 0 0x100>;
+		clocks = <&scpi_clk 4>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 113 IRQ_TYPE_EDGE_RISING>;
+		frequency = <100000000>; /* 100 Mhz */
+		timeout = <20>;
+		mode = <1>; /* 0:rst, 1:int */
+		withboot = <1>;
+	};
+
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_PPI 2 IRQ_TYPE_LEVEL_LOW>,
+			     <GIC_PPI 1 IRQ_TYPE_LEVEL_LOW>,
+			     <GIC_PPI 3 IRQ_TYPE_LEVEL_LOW>,
+			     <GIC_PPI 5 IRQ_TYPE_LEVEL_LOW>;
+	};
+
+	/*cvp_gic0_ipc0, 32 wires used*/
+	ipc0: mailbox@da000000 {
+		status = "ok";
+		compatible = "amd,mero-ipc";
+		#mbox-cells = <1>;
+		reg = <0x0 0xda000000 0x0 0x800000>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 23 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 25 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 27 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 28 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 29 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 30 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
+		parameters = <0 1 0 0x40000
+			      1 0 1 0x20000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+	};
+
+	/*cvp_gic1_ipc1, 32 wires used*/
+	ipc1: mailbox@da800000 {
+		status = "ok";
+		compatible = "amd,mero-ipc";
+		#mbox-cells = <1>;
+		reg = <0x0 0xda800000 0x0 0x800000>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 32  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 33  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 34  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 35  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 36  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 37  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 38  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 39  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 40  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 41  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 42  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 43  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 44  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 45  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 46  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 47  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 48  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 49  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 50  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 51  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 52  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 53  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 54  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 55  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 56  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 57  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 58  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 59  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 60  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 61  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 62  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 63  IRQ_TYPE_LEVEL_HIGH>;
+			//test only
+		parameters = <0 1 0 0x7040000
+				3 1 0 0x7020000
+				7 7 0 0x0020000
+				8 8 0 0x0040000
+				9 9 1 0x0040000
+				10 10 2 0x0040000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+	};
+
+	/*cvp_dsp_ipc2, 30 wires used*/
+	ipc2: mailbox@db000000 {
+		status = "ok";
+		compatible = "amd,mero-ipc";
+		#mbox-cells = <1>;
+		reg = <0x0 0xdb000000 0x0 0x800000>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 281  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 282  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 283  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 284  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 285  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 286  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 287  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 288  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 289  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 290  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 291  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 292  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 293  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 294  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 295  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 296  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 297  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 298  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 299  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 300  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 301  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 302  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 303  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 304  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 305  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 306  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 307  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 308  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 309  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 310  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 311  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 312  IRQ_TYPE_LEVEL_HIGH>;
+		parameters = <31 1 0 0x20000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+	};
+
+	/*cvp_x86_ipc3, 32 wires used*/
+	ipc3: mailbox@db800000 {
+		status = "ok";
+		compatible = "amd,mero-ipc";
+		#mbox-cells = <1>;
+		reg = <0x0 0xdb800000 0x0 0x800000>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 217  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 218  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 219  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 220  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 221  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 222  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 223  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 224  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 225  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 226  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 227  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 228  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 229  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 230  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 231  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 232  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 233  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 234  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 235  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 236  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 237  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 238  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 239  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 240  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 241  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 242  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 243  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 244  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 245  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 246  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 247  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 248  IRQ_TYPE_LEVEL_HIGH>;
+		parameters = <0 24 25 0x40000
+			      2 24 25 0x40000
+			      3 26 27 0x20000
+			      1 26 27 0x20000
+			      4 24 25 0x40000>;
+		// clocks = <&baudclk>, <&apb_pclk>;
+		// clock-names = "baudclk", "apb_pclk";
+	};
+
+	/*cvp_isp_ipc4, 30 wires used*/
+	ipc4: mailbox@dc000000 {
+		status = "ok";
+		compatible = "amd,mero-ipc";
+		#mbox-cells = <1>;
+		reg = <0x0 0xdc000000 0x0 0x800000>;
+		mbox-num = <32>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 249  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 250  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 251  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 252  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 253  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 254  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 255  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 256  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 257  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 258  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 259  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 260  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 261  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 262  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 263  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 264  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 265  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 266  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 267  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 268  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 269  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 270  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 271  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 272  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 273  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 274  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 275  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 276  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 277  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 278  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 279  IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "isp_cam_ctrl", "isp_stats",
+			     "isp_inbuf_rel", "isp_pre_rel", "isp_post_rel",
+			     "isp_cam0_outbuf", "isp_cam1_outbuf",
+			     "isp_cam0_wdma", "isp_cam1_wdma";
+		affinity = <3 3 2 2 2 1 1 2 2>;
+		parameters = <0 31 0 0x7120000
+			3 31 0 0x7120000
+			6 31 1 0x120000
+			7 31 1 0x120000
+			8 31 1 0x120000
+			9 31 1 0x120000
+			10 31 2 0x120000
+			11 31 2 0x120000
+			12 31 3 0x120000
+			13 31 3 0x120000
+			14 31 4 0x120000
+			15 31 4 0x120000
+			16 16 5 0x20000
+			17 17 5 0x20000
+			18 18 5 0x20000
+			19 19 5 0x20000
+			20 20 5 0x20000
+			21 21 6 0x20000
+			22 22 6 0x20000
+			23 23 6 0x20000
+			24 24 6 0x20000
+			25 25 6 0x20000
+			26 26 7 0x20000
+			27 27 8 0x20000
+			28 28 9 0x20000
+			>;
+	};
+
+	// keep mailboxes of x86_ipc in a row
+	mero-ipc {
+		status = "ok";
+		compatible = "amd,ipc-core";
+		mboxes = <&ipc3 0>, <&ipc3 2>, <&ipc3 3>, <&ipc3 1>,
+			 <&ipc0 1>;
+		mbox-names = "sync", "asynctx", "asyncrx", "hi_priority",
+			     "smurx";
+	};
+
+	isp-ipc@100067000 {
+		status = "ok";
+		compatible = "amd,isp-ipc";
+		reg = <0x1 0x00067000 0x0 0x1000>,
+			<0x1 0x90061000 0x0 0x1000>;
+		memory-region = <&isp_input &isp_output>;
+		test-config = <0x00000001>;
+		mboxes = <&ipc4 0>, <&ipc4 3>, <&ipc4 6>, <&ipc4 7>,
+			 <&ipc4 8>, <&ipc4 9>, <&ipc4 10>, <&ipc4 11>,
+			 <&ipc4 12>, <&ipc4 13>, <&ipc4 14>, <&ipc4 15>,
+			 <&ipc4 16>, <&ipc4 17>, <&ipc4 18>, <&ipc4 19>,
+			 <&ipc4 20>, <&ipc4 21>, <&ipc4 22>, <&ipc4 23>,
+			 <&ipc4 24>, <&ipc4 25>, <&ipc4 26>, <&ipc4 27>;
+		mbox-names = "cam0_cntl", "cam1_cntl","cam0_rgb",
+			     "cam0_ir", "cam1_rgb", "cam1_ir",
+			     "cam0_isp_input", "cam1_isp_input",
+			     "cam0_pre_buff","cam1_pre_buff",
+			     "cam0_post_buff", "came1_post_buff",
+			     "cam0_stream0", "cam0_stream1",
+			     "cam0_stream2", "cam0_stream3",
+			     "cam0_streamir", "cam1_stream0",
+			     "cam1_stream1", "cam1_stream2",
+			     "cam1_stream3", "cam1_streamir",
+			     "cam0_dma", "cam1_dma";
+	};
+
+	memory {
+		reg = <0x8 0x00000000 0x0 0x80000000>,
+			<0x10 0x00000000 0x0 0x80000000>,
+			<0x14 0x00000000 0x0 0x80000000>,
+			<0x18 0x00000000 0x0 0x80000000>,
+			<0x1C 0x00000000 0x0 0x80000000>,
+			<0x00 0xc4000000 0x0 0x000c0000>,
+			<0x00 0xc6000000 0x0 0x00100000>,
+			<0x00 0xc6800000 0x0 0x00100000>,
+			<0x28 0xffe80000 0x0 0x00080000>,
+			<0x29 0xffe80000 0x0 0x00080000>,
+			<0x2a 0xffe80000 0x0 0x00080000>,
+			<0x2b 0xffe80000 0x0 0x00080000>,
+			<0x2c 0xffe80000 0x0 0x00080000>,
+			<0x2d 0xffe80000 0x0 0x00080000>,
+			<0x2e 0xffe00000 0x0 0x00100000>,
+			<0x2f 0xffe00000 0x0 0x00100000>,
+			<0x40 0x00000000 0x8 0x00000000>;
+		device_type = "memory";
+	};
+
+	amba {
+		status = "ok";
+		compatible = "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		tbu5_dma: smmu-v3-pmcg@d18e0000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd18e0000 0x0 0x10000>,
+				<0x0 0xd18f2000 0x0 0xe000>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 138 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		dma_clk: dma_clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0x0>;
+			clock-frequency = <533000000>;
+		};
+
+		pdma0: pdma@d0000000 {
+			compatible = "arm,pl330", "arm,primecell";
+			reg = <0x0 0xd0000000 0 0x1000>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 72 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 74 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 75 IRQ_TYPE_LEVEL_HIGH>;
+			iommus = <&smmu 0x50000>;
+			clock-names = "apb_pclk";
+			clocks = <&dma_clk>;
+			#clock-cells = <0>;
+			#dma-cells = <1>;
+			#dma-channels = <8>;
+			#dma-requests = <32>;
+			privileged = <0>;
+		};
+
+		pdma1: pdma@d0800000 {
+			compatible = "arm,pl330", "arm,primecell";
+			reg = <0x0 0xd0800000 0 0x1000>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 76 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 79 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 80 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 81 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 82 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 84 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
+				<GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
+			//iommus = <&smmu 0x50000>;
+			clock-names = "apb_pclk";
+			clocks = <&dma_clk>;
+			#clock-cells = <0>;
+			#dma-cells = <1>;
+			#dma-channels = <8>;
+			#dma-requests = <32>;
+			privileged = <0>;
+		};
+	};
+
+	rtc@102d01700 {
+		compatible = "amd,cvip-rtc";
+		reg = <0x1 0x02d01700 0x0 0x10>,
+		<0x1 0x02d029e0 0x0 0x10>;
+	};
+
+	pmu{
+		status = "ok";
+		compatible = "arm,armv8-pmuv3";
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
+	};
+
+	smmu: iommu {
+		status = "ok";
+		compatible = "arm,smmu-v3";
+		reg = <0x0 0xd1800000 0 0x20000>,
+		      <0x0 0xd1822000 0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts =
+			     //TCU_a.event_q_s or TCU_a.event_q_ns or
+			     //TCU_a.cmd_sync_ns or TCU_a.cmd_sync_s or
+			     //TCU_a.global_ns or TCU_a.global_s
+			     //TCU_a.ras or TCU_a.pmu
+			     //TCU_a.evento
+			     <GIC_SPI 150 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+		//dma-coherent;
+		#iommu-cells = <1>;
+	};
+
+	smmu_v3_pmcg {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		SMMU_ADDR = <&smmu>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 150 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	tbu0_pcie_cfg: smmu-v3-pmcg@d1840000 {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		reg = <0x0 0xd1840000 0x0 0x10000>,
+			<0x0 0xd1852000 0x0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 146 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	tbu1_smn: smmu-v3-pmcg@d1860000 {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		reg = <0x0 0xd1860000 0x0 0x10000>,
+			<0x0 0xd1872000 0x0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 143 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	tbu2_coresight: smmu-v3-pmcg@d1880000 {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		reg = <0x0 0xd1880000 0x0 0x10000>,
+			<0x0 0xd1892000 0x0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 142 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	tbu3_pcie: smmu-v3-pmcg@d18a0000 {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		reg = <0x0 0xd18a0000 0x0 0x10000>,
+			<0x0 0xd18b2000 0x0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 148 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	tbu4_cdp: smmu-v3-pmcg@d18c0000 {
+		status = "ok";
+		compatible = "arm,smmu-v3-pmcg";
+		reg = <0x0 0xd18c0000 0x0 0x10000>,
+			<0x0 0xd18d2000 0x0 0xe000>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 140 IRQ_TYPE_EDGE_RISING>;
+		interrupt-names = "combined";
+	};
+
+	//MERO_SMU
+	mero_smu {
+		status = "ok";
+		compatible = "amd,mero-smu";
+		reg = <0x1 0x03b10000 0 0x1000>;
+	};
+
+	//MMU-TBU-APU_PCIE_M_INTERFACE
+	apu_pcie_m {
+		status = "ok";
+		compatible = "amd,cvip-biommu";
+		iommus = <&smmu 0x60000>;
+		output_addr = <0xfffe 0x00000000>,
+			      <0xfffd 0xfc00e000>,
+			      <0x0 0xc0000000>;
+		map_size = <0x0 0x20000000>,
+			   <0x0 0x00002000>,
+			   <0x0 0x20000000>;
+		input_addr = <0x22 0x00000000>,
+			     <0x26 0x2000e000>,
+			     <0x26 0x30000000>;
+		map_prot = <0x0 0x00000003>,
+			   <0x0 0x00000003>,
+			   <0x0 0x00000003>;
+	};
+
+	//MMU-TBU-APU_SMU
+	apu_smu {
+		status = "ok";
+		compatible = "amd,cvip-biommu";
+		iommus = <&smmu 0x10000>;
+		output_addr = <0x0 0x00000000>,
+			<0x0 0xd9000000>,
+			<0x0 0x00800000>,
+			<0x0 0xdb800000>,
+			<0x0 0xdc000000>,
+			<0x0 0xda000000>,
+			<0x0 0xc0080000>,
+			<0x0 0x021d0000>;
+		map_size = <0x0 0x00010000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00080000>,
+			<0x0 0x00010000>;
+		input_addr = <0x0 0x00000000>,
+			<0x0 0x00100000>,
+			<0x0 0x00800000>,
+			<0x0 0x00400000>,
+			<0x0 0x00410000>,
+			<0x0 0x00420000>,
+			<0x0 0x00430000>,
+			<0x0 0x004b0000>;
+		map_prot = <0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000001>,
+			<0x0 0x00000003>;
+	};
+
+	// MMU-TBU-CORESIGHT
+	tbu_coresight {
+		status = "ok";
+		compatible = "amd,cvip-biommu";
+		iommus = <&smmu 0x20000>;
+		output_addr = <0x0 0x00000000>,
+			<0x0 0x00800000>,
+			<0x0 0x02030000>,
+			<0x0 0xc4000000>,
+			<0x0 0xc6000000>,
+			<0x0 0xc6800000>,
+			<0x0 0xd1800000>,
+			<0x0 0xd2000000>,
+			<0x0 0xd2800000>,
+			<0x0 0xdb800000>,
+			<0x0 0xd9000000>,
+			<0x1 0x00000000>,
+			<0x8 0x00000000>;
+		map_size = <0x0 0x00010000>,
+			<0x0 0x00001000>,
+			<0x0 0x00080000>,
+			<0x0 0x000c0000>,
+			<0x0 0x00100000>,
+			<0x0 0x00100000>,
+			<0x0 0x00040000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00800000>,
+			<0x1 0x00000000>,
+			<0x8 0x00000000>;
+		input_addr = <0x0 0x00000000>,
+			<0x0 0x00800000>,
+			<0x0 0x02030000>,
+			<0x0 0xc4000000>,
+			<0x0 0xc6000000>,
+			<0x0 0xc6800000>,
+			<0x0 0xd1800000>,
+			<0x0 0xd2000000>,
+			<0x0 0xd2800000>,
+			<0x0 0xdb800000>,
+			<0x0 0xd9000000>,
+			<0x1 0x00000000>,
+			<0x8 0x00000000>;
+		map_prot = <0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>;
+	};
+
+	//MMU-TBU-CORESIGHT_ACCESS_AND_CORESIGHT_TMC
+	stm {
+		status = "ok";
+		compatible = "arm,coresight-stm";
+		reg = <0x0 0xe7400000 0x0 0x4000000>;
+	};
+
+	//SP-PLATFORM
+	sp_platform {
+		status = "ok";
+		compatible = "amd,cvip-psp";
+		reg = <0x1 0x03810000 0 0x0C00>,
+		      <0x0 0xb000 0x0 0x1000>,
+		      <0x0 0x800000 0x0 0x1000>;
+	};
+
+	//MMU-TBU-CDP_AND_Decompression
+	dcprs@d3800000 {
+		status = "ok";
+		compatible = "amd,dcprs";
+		reg = <0x0 0xd3800000 0x0 0x800000>;
+		iommus = <&smmu 0x40000>;
+		interrupts = <GIC_SPI 88 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 89 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 90 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 91 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 92 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 93 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 94 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 95 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 96 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 97 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 98 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 99 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 100 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 101 IRQ_TYPE_EDGE_RISING>,
+			     <GIC_SPI 102 IRQ_TYPE_EDGE_RISING>;
+	};
+
+	vdsp@0 {
+		status = "ok";
+		compatible = "amd,cvip-biommu";
+		iommus = <&smmu 0x0>;
+		output_addr = <0x0 0xdb000000>,
+			<0x0 0xdb800000>,
+			<0x1 0x02d01000>,
+			<0x0 0x00800000>;
+		map_size = <0x0 0x00001000>,
+			<0x0 0x00001000>,
+			<0x0 0x00002000>,
+			<0x0 0x00001000>;
+		input_addr = <0x0 0xdb000000>,
+			<0x0 0xdb800000>,
+			<0x0 0x10000000>,
+			<0x0 0x00800000>;
+		map_prot = <0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>,
+			<0x0 0x00000003>;
+	};
+
+	q6_0: dsp@c4000000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu6_q6_0: smmu-v3-pmcg@d1900000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd1900000 0x0 0x10000>,
+				<0x0 0xd1912000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 118 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@1 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x0001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@2 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x0002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@3 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x0003>;
+		};
+	};
+
+	q6_1: dsp@c4020000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu7_q6_1: smmu-v3-pmcg@d1920000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd1920000 0x0 0x10000>,
+				<0x0 0xd1932000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 119 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@1000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x1001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@1001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x1002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@1002 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x1003>;
+		};
+	};
+
+	q6_2: dsp@c4040000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu8_q6_2: smmu-v3-pmcg@d1940000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd1940000 0x0 0x10000>,
+				<0x0 0xd1952000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 120 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@2000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x2001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@2001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x2002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@2002 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x2003>;
+		};
+	};
+
+	q6_3: dsp@c4060000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu9_q6_3: smmu-v3-pmcg@d1960000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd1960000 0x0 0x10000>,
+				<0x0 0xd1972000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 121 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@3000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x3001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@3001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x3002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@3002 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x3003>;
+		};
+	};
+
+	q6_4: dsp@c4080000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu10_q6_4: smmu-v3-pmcg@d1980000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd1980000 0x0 0x10000>,
+				<0x0 0xd1992000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 122 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@4000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x4001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@4001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x4002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@4002 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x4003>;
+		};
+	};
+
+	q6_5: dsp@c40a0000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 3>;
+
+		tbu11_q6_5: smmu-v3-pmcg@d19a0000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd19a0000 0x0 0x10000>,
+				<0x0 0xd19b2000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 123 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@5000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x5001>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		dcache@5001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x5002>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@5002 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x5003>;
+		};
+	};
+
+	c5_0: dsp@c6000000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 2>;
+
+		tbu12_c5_0: smmu-v3-pmcg@d19c0000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd19c0000 0x0 0x10000>,
+				<0x0 0xd19d2000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 124 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@6000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x6001>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@6001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x6002>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+	};
+
+	c5_1: dsp@c6800000 {
+		status = "ok";
+		#size-cells = <0x2>;
+		#address-cells = <0x2>;
+		ranges;
+
+		compatible = "amd,cvip-dsp";
+		clocks = <&scpi_clk 2>;
+
+		tbu13_c5_1: smmu-v3-pmcg@d19e0000 {
+			status = "ok";
+			compatible = "arm,smmu-v3-pmcg";
+			reg = <0x0 0xd19e0000 0x0 0x10000>,
+				<0x0 0xd19f2000 0x0 0xe000>;
+			override_cfg = <0x00d01f03>;
+			override_ceid = <0x0 0x87 0x0 0x0>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 125 IRQ_TYPE_EDGE_RISING>;
+			interrupt-names = "combined";
+		};
+
+		icache@7000 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x7001>;
+			output_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_size = <0x0 0x00001000>,
+				<0x0 0x00001000>,
+				<0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>,
+				<0x0 0xdb800000>,
+				<0x0 0x00800000>;
+			map_prot = <0x0 0x00000003>,
+				<0x0 0x00000003>,
+				<0x0 0x00000003>;
+		};
+
+		idma@7001 {
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x7002>;
+			output_addr = <0x0 0xdb000000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0xdb000000>;
+			map_prot = <0x0 0x00000003>;
+		};
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		a55_boot@00000000 {
+			reg = <0x0 0x00000000 0x0 0x00001000>;
+		};
+
+		sram_a55_boot: a55_boot@00001000 {
+			reg = <0x0 0x00001000 0x0 0x0000D000>;
+		};
+
+		a55_boot@0000E000 {
+			reg = <0x0 0x0000E000 0x0 0x00002000>;
+		};
+
+		/*
+		 * the fmr <address,size> are here as placeholder,
+		 * and the real value may be changed while booting.
+		 * when system boot up, PSP get FMR address info from BIOS,
+		 * and pass these info to CBL, CBL will then update the
+		 * correct value in DTB.
+		 * different BIOS may contain different values.
+		 */
+		hydra_output: fmr2a {
+			reg = <0x9 0x60800000 0x0 0x07d00000>;
+		};
+
+		spcie_dma: fmr2 {
+			reg = <0x9 0x68500000 0x0 0x01900000>;
+		};
+
+		susb_dma: fmr3 {
+			reg = <0x9 0x50e00000 0x0 0x0fa00000>;
+		};
+
+		cvip_ro: fmr4 {
+			reg = <0x9 0x3e200000 0x0 0x12c00000>;
+		};
+
+		isp_input: fmr5 {
+			reg = <0x9 0x36400000 0x0 0x07e00000>;
+		};
+
+		fmr7 {
+			reg = <0x9 0x1f000000 0x0 0x0f600000>;
+		};
+
+		isp_output: fmr8 {
+			reg = <0x9 0x2e600000 0x0 0x07e00000>;
+		};
+
+		x86_spcie: fmr2_10 {
+			reg = <0x9 0x69e00000 0x0 0x09600000>;
+		};
+
+		x86_ro: fmr10 {
+			reg = <0x9 0x73400000 0x0 0x1f400000>;
+		};
+
+		sram_q6_s0: q6_s0@c4000000 {
+			reg = <0x0 0xc4000000 0x0 0x000c0000>;
+		};
+
+		sram_c5_s0: c5_s0@c6000000 {
+			reg = <0x0 0xc6000000 0x0 0x00100000>;
+		};
+
+		sram_c5_s1: c5_s1@c6800000 {
+			reg = <0x0 0xc6800000 0x0 0x00100000>;
+		};
+
+		sram_q6_m0: q6_m0@28ffe80000 {
+			reg = <0x28 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_q6_m1: q6_m1@29ffe80000 {
+			reg = <0x29 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_q6_m2: q6_m2@2affe80000 {
+			reg = <0x2a 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_q6_m3: q6_m3@2bffe80000 {
+			reg = <0x2b 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_q6_m4: q6_m4@2cffe80000 {
+			reg = <0x2c 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_q6_m5: q6_m5@2dffe80000 {
+			reg = <0x2d 0xffe80000 0x0 0x00080000>;
+		};
+
+		sram_c5_m0: c5_m0@2effe00000 {
+			reg = <0x2e 0xffe00000 0x0 0x00100000>;
+		};
+
+		sram_c5_m1: c5_m1@2fffe00000 {
+			reg = <0x2f 0xffe00000 0x0 0x00100000>;
+		};
+
+		sc_aperture0 {
+			reg = <0x10 0x00000000 0x0 0x80000000>;
+		};
+
+		sc_aperture1 {
+			reg = <0x14 0x00000000 0x0 0x80000000>;
+		};
+
+		sc_aperture2 {
+			reg = <0x18 0x00000000 0x0 0x80000000>;
+		};
+
+		sc_aperture3 {
+			reg = <0x1c 0x00000000 0x0 0x80000000>;
+		};
+
+		alt_0 {
+			reg = <0x30 0x00000000 0x0 0x80000000>;
+		};
+
+		alt_1 {
+			reg = <0x38 0x00000000 0x0 0x80000000>;
+		};
+
+		x_aperture {
+			reg = <0x40 0x00000000 0x8 0x00000000>;
+		};
+	};
+
+	recovery_dump {
+		compatible = "amd,mero-recovery-dump";
+		reg = <0x0 0xaff0 0x0 0x10>;
+		region-size = <0x200000>;
+	};
+
+	mero,ion {
+		status = "ok";
+		compatible = "amd,mero-ion";
+		#size-cells = <0x0>;
+		#address-cells = <0x1>;
+
+		mero,ion-heap@10 {
+			reg = <10>;
+			memory-region = <&sram_q6_s0>;
+			mero,ion-heap-type = "CARVEOUT";
+		};
+
+		mero,ion-heap@11 {
+			reg = <11>;
+			memory-region = <&sram_c5_s0>;
+			mero,ion-heap-type = "CARVEOUT";
+		};
+
+		mero,ion-heap@12 {
+			reg = <12>;
+			memory-region = <&sram_c5_s1>;
+			mero,ion-heap-type = "CARVEOUT";
+		};
+
+		mero,ion-heap@13 {
+			reg = <13>;
+			memory-region = <&sram_q6_m0>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@14 {
+			reg = <14>;
+			memory-region = <&sram_q6_m1>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@15 {
+			reg = <15>;
+			memory-region = <&sram_q6_m2>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@16 {
+			reg = <16>;
+			memory-region = <&sram_q6_m3>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@17 {
+			reg = <17>;
+			memory-region = <&sram_q6_m4>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@18 {
+			reg = <18>;
+			memory-region = <&sram_q6_m5>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@19 {
+			reg = <19>;
+			memory-region = <&sram_c5_m0>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@20 {
+			reg = <20>;
+			memory-region = <&sram_c5_m1>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@21 {
+			reg = <21>;
+			memory-region = <&sram_a55_boot>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+		};
+
+		mero,ion-heap@9 {
+			reg = <9>;
+			mero,ion-heap-type = "SYSTEM";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@22 {
+			reg = <22>;
+			memory-region = <&isp_input>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@23 {
+			reg = <23>;
+			memory-region = <&hydra_output>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@25 {
+			reg = <25>;
+			memory-region = <&isp_output>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@26 {
+			reg = <26>;
+			memory-region = <&x86_spcie>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@27 {
+			reg = <27>;
+			memory-region = <&x86_ro>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+
+		mero,ion-heap@28 {
+			reg = <28>;
+			memory-region = <&cvip_ro>;
+			mero,ion-heap-type = "CARVEOUT";
+			mero,ion-heap-init-type = "memory-no-clear";
+			mero,ion-heap-has-syscache = <0x0 0x00800840>;
+		};
+	};
+
+	chosen {
+		bootargs = "console=ttyS0,115200";
+		linux,initrd-start = <0x8 0x10000000>;
+		linux,initrd-end = <0x8 0x18000000>;
+		stdout-path = "/serial@102dd9000";
+	};
+
+	pcie0: pcie@0x2000000000 {
+		status = "ok";
+		compatible = "pci-host-ecam-amd";
+		linux,pci-probe-only = <0>;
+		linux,pci-domain = <0x0>;
+		#address-cells = <3>;
+		#size-cells = <2>;
+		secure-dma-region = <&spcie_dma &susb_dma &hydra_output>;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 189 IRQ_TYPE_EDGE_RISING>;
+		detect_pin = <&cvip_pinctrl 0 0>;
+		device_type = "pci";
+		bus-range = <0x80 0xff>;
+		reg = <0x22 0x00000000 0 0x20000000>,
+		      <0x26 0x20008000 0 0x00008000>,
+		      <0x26 0x30000000 0 0x30000000>,
+		      <0x00 0x00800000 0 0x00001000>,
+		      <0x01 0x1013a320 0 0x00000010>;
+		reg-names = "cfg", "io", "mmio", "cvip", "flushctl";
+		msi-parent = <&cmc>;
+		ranges =
+			/* IO port 0xe000~0xffff */
+			<0x81000000
+			 0x0 0x0000e000
+			 0x26 0x2000e000
+			 0x0 0x00002000>,
+			/* MMIO 0xc0000000~0xdfffffff */
+			<0x82000000
+			 0x0 0xc0000000
+			 0x26 0x30000000
+			 0x0 0x20000000>;
+
+		/* S-PCIe -> S-interface -> GIC600 */
+		apu_s_intf_spcie{
+			status = "ok";
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x30000>;
+			output_addr = <0x0 0xd9000000>;
+			map_size = <0x0 0x00010000>;
+			input_addr = <0x0 0x00100000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		/* S-USB -> S-interface -> GIC600 */
+		apu_s_intf_susb{
+			status = "ok";
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x30001>;
+			output_addr = <0x0 0xd9000000>;
+			map_size = <0x0 0x00010000>;
+			input_addr = <0x0 0x00100000>;
+			map_prot = <0x0 0x00000003>;
+		};
+
+		/* X86 -> S-interface -> X86_IPC */
+		apu_s_intf_x86{
+			status = "ok";
+			compatible = "amd,cvip-biommu";
+			iommus = <&smmu 0x30002>;
+			no-suspend-unmap;
+			output_addr = <0x0 0xdb800000>;
+			map_size = <0x0 0x00001000>;
+			input_addr = <0x0 0x00400000>;
+			map_prot = <0x0 0x00000003>;
+		};
+	};
+
+	scpi_protocol: scpi@03b10000 {
+		status = "ok";
+		compatible = "amd,cvip-scpi";
+		reg = <0x0 0x0000C000 0 0x0010>;
+		clocks = <&scpi_dvfs 1>,
+			 <&scpi_clk 0>, <&scpi_clk 2>, <&scpi_clk 3>,
+			 <&scpi_clk 4>, <&scpi_clk 5>, <&scpi_clk 6>;
+		clock-names = "a55twoclk", "a55dsuclk", "c5clk", "q6clk",
+			      "nicclk", "coresightclk", "decompressclk";
+
+		clocks {
+			compatible = "arm,scpi-clocks";
+			scpi_dvfs: scpi_clocks@0 {
+				compatible = "arm,scpi-dvfs-clocks";
+				#clock-cells = <1>;
+				clock-indices = <1>;
+				clock-output-names = "a55twoclk";
+				operating-points-v2 = <&cpu_opp_table>;
+			};
+			scpi_clk: scpi_clocks@2 {
+				compatible = "arm,scpi-variable-clocks";
+				#clock-cells = <1>;
+				clock-indices = <0>, <2>, <3>, <4>, <5>, <6>;
+				clock-output-names = "a55dsuclk", "c5clk",
+						     "q6clk", "nicClk",
+						     "coresightclk",
+						     "decompressclk";
+			};
+		};
+	};
+
+	cpu_opp_table: opp_table {
+		status = "ok";
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp@600000000 {
+			opp-hz = /bits/ 64 <600000000>;
+			opp-microvolt = <800000 800000 880000>;
+			clock-latency-ns = <244144>;
+		};
+		opp@800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <800000 800000 880000>;
+			clock-latency-ns = <244144>;
+		};
+		opp@1511000000 {
+			opp-hz = /bits/ 64 <1511000000>;
+			opp-microvolt = <800000 800000 880000>;
+			clock-latency-ns = <244144>;
+		};
+		opp@1700000000 {
+			opp-hz = /bits/ 64 <1700000000>;
+			opp-microvolt = <800000 800000 880000>;
+			clock-latency-ns = <244144>;
+		};
+	};
+
+	spiclk_100mhz: clk100mhz_1 {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+
+	spi0: spi@102dc8000 {
+		status = "ok";
+		compatible = "amd,amdi0061-spi";
+		reg = <0x1 0x02dc8000 0 0x1000>;
+		spi-controller;
+		interrupt-parent = <&gic>;
+		interrupts = <GIC_SPI 185 IRQ_TYPE_LEVEL_HIGH>;
+		clocks = <&spiclk_100mhz>;
+		clock-names = "spi_clk";
+		amd,read-mode-quirk = <0x39>;
+
+		spidev: spidev@0 {
+			status="ok";
+			compatible = "amd,cvip-spi-dev";
+			reg = <0>;
+			spi-max-frequency = <1000000>;
+		};
+	};
+
+	xport: xport@0 {
+		status = "ok";
+		compatible = "amd,cvip-xport";
+	};
+};
+
+&q6_0 {
+	memory-region = <&sram_q6_m0>;
+};
+
+&q6_1 {
+	memory-region = <&sram_q6_m1>;
+};
+
+&q6_2 {
+	memory-region = <&sram_q6_m2>;
+};
+
+&q6_3 {
+	memory-region = <&sram_q6_m3>;
+};
+
+&q6_4 {
+	memory-region = <&sram_q6_m4>;
+};
+
+&q6_5 {
+	memory-region = <&sram_q6_m5>;
+};
+
+&c5_0 {
+	memory-region = <&sram_c5_m0>;
+};
+
+&c5_1 {
+	memory-region = <&sram_c5_m1>;
+};
